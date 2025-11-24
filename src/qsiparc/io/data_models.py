@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping, Sequence
+
+import pandas as pd
 
 
 @dataclass(frozen=True)
@@ -26,9 +28,20 @@ class AtlasDefinition:
     """Description of an atlas available to the pipeline."""
 
     name: str
-    path: Path
-    labels: Mapping[int, str]
+    nifti_path: Path
+    lut: pd.DataFrame | Path | None = None
     resolution: str | None = None
+
+
+@dataclass(frozen=True)
+class ScalarMapDefinition:
+    """Description of a scalar map available to the pipeline."""
+
+    name: str
+    nifti_path: Path
+    model: str | None = None
+    origin: str | None = None
+    space: str | None = None
 
 
 @dataclass(frozen=True)
@@ -36,7 +49,8 @@ class ReconInput:
     """Paths to QSIRecon outputs required for parcellation."""
 
     context: SubjectContext
-    scalar_maps: Mapping[str, Path]
+    atlases: Sequence[AtlasDefinition]
+    scalar_maps: Sequence[ScalarMapDefinition]
+    native_atlases: Sequence[AtlasDefinition] | None = None
     mask: Path | None = None
     transforms: Sequence[Path] = ()
-

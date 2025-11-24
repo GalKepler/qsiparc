@@ -1,4 +1,4 @@
-"""Metric calculators for region-wise summaries and connectivity."""
+"""Metrics interfaces."""
 
 from qsiparc.metrics.connectivity import ConnectivityMetric
 from qsiparc.metrics.summary import RegionMetric

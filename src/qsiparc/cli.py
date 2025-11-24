@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, List
 
 from qsiparc.config import AtlasSelection, MetricSelection, ParcellationConfig
 from qsiparc.reporting.reports import ReportBuilder
@@ -32,7 +32,7 @@ def build_parser() -> argparse.ArgumentParser:
 def parse_config(args: argparse.Namespace) -> ParcellationConfig:
     """Translate CLI arguments into a ParcellationConfig."""
 
-    atlases: List[AtlasSelection] = [AtlasSelection(name=path.stem, path=path) for path in args.atlas]
+    atlases: list[AtlasSelection] = [AtlasSelection(name=path.stem, path=path) for path in args.atlas]
     metrics = MetricSelection(names=("mean", "median"), connectivity=False)
     return ParcellationConfig(
         input_root=args.input_root,

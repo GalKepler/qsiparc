@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence
 
 
 @dataclass(frozen=True)
@@ -12,8 +12,8 @@ class AtlasSelection:
     """Atlas requested for a run, provided by path or discovered in recon outputs."""
 
     name: str
-    path: Optional[Path] = None
-    resolution: Optional[str] = None
+    path: Path | None = None
+    resolution: str | None = None
 
 
 @dataclass(frozen=True)
@@ -31,10 +31,10 @@ class ParcellationConfig:
     input_root: Path
     output_root: Path
     subjects: Iterable[str]
-    atlases: List[AtlasSelection] = field(default_factory=list)
+    atlases: list[AtlasSelection] = field(default_factory=list)
     metrics: MetricSelection = field(default_factory=MetricSelection)
     profile: str = "volume"  # e.g., volume or surface modes
-    extra: Dict[str, str] = field(default_factory=dict)
+    extra: dict[str, str] = field(default_factory=dict)
 
     def ensure_output_root(self) -> Path:
         """Return the output root and create it if needed."""

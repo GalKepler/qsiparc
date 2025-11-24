@@ -5,6 +5,8 @@ from qsiparc.config import ParcellationConfig
 from qsiparc.provenance import RunProvenance
 
 __all__ = [
+    "ParcellationConfig",
+    "RunProvenance",
     "atlas",
     "cli",
     "config",
@@ -13,6 +15,4 @@ __all__ = [
     "parcellation",
     "reporting",
     "workflows",
-    "ParcellationConfig",
-    "RunProvenance",
 ]

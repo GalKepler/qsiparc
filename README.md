@@ -16,7 +16,7 @@ A lightweight Python package for parcellating QSIPrep/QSIRecon diffusion MRI out
 - `qsiparc/config.py`: run configuration objects (subjects, atlases, metrics, profile) with helpers to prepare output roots.
 - `qsiparc/io/`: data models plus stubs for discovering QSIRecon outputs and validating inputs.
 - `qsiparc/atlas/`: registry for user-provided atlases and transform placeholders.
-- `qsiparc/parcellation/`: volume-only strategy and parcellator plus pipeline plans/results.
+- `qsiparc/parcellation/`: functional API `parcellate_volume` to compute per-ROI metrics (dict/DataFrame) from an atlas + scalar map, with optional resampling when shapes differ.
 - `qsiparc/metrics/`: interfaces for region-wise and connectivity metrics.
 - `qsiparc/workflows/runner.py`: orchestration stub wiring IO, atlas registry, and provenance tracking.
 - `qsiparc/reporting/`: minimal report builder for run notes; will host QC/report outputs.
@@ -27,7 +27,7 @@ Atlases are not bundled with the package; point the CLI at paths on disk or thos
 ### Next steps
 
 - Flesh out IO discovery for QSIRecon/BIDS derivatives and atlas LUT reading.
-- Implement real volume parcellation over supplied atlases and metric calculators.
+- Extend volume parcellation with additional reducers (median, std, counts) and metrics.
 - Add richer provenance/logging and integrate report generation with real outputs.
 
 ## Getting started with your project

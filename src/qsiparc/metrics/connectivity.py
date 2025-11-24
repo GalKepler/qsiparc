@@ -5,8 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Protocol
 
-from qsiparc.parcellation.pipeline import ParcellationResult
-
 
 @dataclass(frozen=True)
 class ConnectivityMetric(Protocol):
@@ -14,5 +12,4 @@ class ConnectivityMetric(Protocol):
 
     name: str
 
-    def compute(self, result: ParcellationResult) -> float: ...
-
+    def compute(self, *args, **kwargs) -> float: ...

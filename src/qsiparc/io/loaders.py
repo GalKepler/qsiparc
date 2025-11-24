@@ -2,24 +2,62 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping
+
+from bids import BIDSLayout
 
 from qsiparc.config import AtlasSelection
-from qsiparc.io.data_models import AtlasDefinition, ReconInput, SubjectContext
+from qsiparc.io.data_models import AtlasDefinition, ReconInput, ScalarMapDefinition, SubjectContext
+
+SCALAR_SUFFIXES: Sequence[str] = (
+    "FA",
+    "MD",
+    "RD",
+    "AD",
+    "L1",
+    "L2",
+    "L3",
+    "MK",
+    "ODI",
+    "ICVF",
+    "ISOVF",
+    "AFD",
+    "DECFA",
+    "mode",
+    "S0",
+    "dwi",
+)
 
 
-def load_recon_inputs(root: Path, subjects: Iterable[str]) -> List[ReconInput]:
-    """Return stubs for recon inputs discovered under a root directory.
+def load_recon_inputs(
+    root: Path, subjects: Iterable[str] | None = None, sessions: Iterable[str] | None = None
+) -> list[ReconInput]:
+    """Discover scalar maps and atlases for subjects/sessions in a QSIRecon derivative."""
 
-    Actual BIDS/derivative discovery will land here later; for now this
-    function only wires the data model and returns empty scalar maps.
-    """
-
-    recon_inputs: List[ReconInput] = []
-    for subject_id in subjects:
-        context = SubjectContext(subject_id=subject_id)
-        recon_inputs.append(ReconInput(context=context, scalar_maps={}, mask=None, transforms=()))
+    layout = BIDSLayout(
+        root,
+        validate=False,
+        derivatives=True,
+        config=["bids", "derivatives"],
+    )
+    entities = layout.get_entities()
+    subj_list = list(subjects) if subjects else layout.get_subjects()
+    recon_inputs: list[ReconInput] = []
+    atlases = discover_atlases(layout=layout)
+    for subject_id in subj_list:
+        if sessions:
+            ses_list = list(sessions)
+        elif "session" in entities:
+            ses_list = layout.get_sessions(subject=subject_id) or [None]
+        else:
+            ses_list = [None]
+        for session_id in ses_list:
+            context = SubjectContext(subject_id=subject_id, session_id=session_id)
+            scalar_maps = discover_scalar_maps(layout=layout, subject=subject_id, session=session_id)
+            recon_inputs.append(
+                ReconInput(context=context, scalar_maps=scalar_maps, atlases=atlases, mask=None, transforms=())
+            )
     return recon_inputs
 
 
@@ -35,8 +73,78 @@ def load_atlas_definition(selection: AtlasSelection, atlas_root: Path) -> AtlasD
     return AtlasDefinition(name=selection.name, path=atlas_path, labels=labels)
 
 
-def discover_scalar_maps(subject_root: Path) -> Dict[str, Path]:
-    """Placeholder for later scalar map discovery."""
+def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) -> list[Path]:
+    """Return scalar map paths keyed by map name."""
 
-    _ = subject_root
-    return {}
+    filters = {
+        "subject": subject,
+        "suffix": "dwimap",
+        "extension": ["nii", "nii.gz"],
+    }
+    if session and "session" in layout.get_entities():
+        filters["session"] = session
+
+    files = layout.get(
+        return_type="object",
+        **filters,
+    )
+
+    scalar_maps: Sequence[ScalarMapDefinition] = []
+
+    for fobj in files:
+        scalar_maps.append(
+            ScalarMapDefinition(
+                name=_scalar_name(fobj),
+                nifti_path=Path(fobj.path),
+                model=fobj.entities.get("model"),
+                origin=fobj.entities.get("Description"),
+                space=fobj.entities.get("space"),
+            )
+        )
+
+    return scalar_maps
+
+
+def discover_atlases(layout: BIDSLayout) -> list[AtlasDefinition]:
+    """Return atlas definitions."""
+
+    filters = {
+        "space": "MNI152NLin2009cAsym",
+        "suffix": ["dseg"],
+        "extension": ["nii", "nii.gz"],
+    }
+
+    atlas_files = layout.get(return_type="object", **filters)
+
+    atlases: list[AtlasDefinition] = []
+    for fobj in atlas_files:
+        name = (
+            fobj.get_entities().get("segmentation")
+            or fobj.get_entities().get("atlas")
+            or fobj.get_entities().get("desc")
+            or Path(fobj.path).stem
+        )
+        resolution = fobj.get_entities().get("res") or None
+        lut_entities = {"atlas": name, "extension": ["tsv", "csv"]}
+        lut_files = layout.get(return_type="object", **lut_entities)
+
+        lut_path = Path(lut_files[0].path) if lut_files else None
+        atlases.append(AtlasDefinition(name=name, nifti_path=Path(fobj.path), lut=lut_path, resolution=resolution))
+    return atlases
+
+
+def _parameter_name(fobj) -> str:
+    entities = fobj.get_entities()
+    param = entities.get("param")
+    if not param:
+        fname = fobj.filename
+        param_value = fname.split("param-")[-1].split("_")[0]
+        param = param_value
+    return param
+
+
+def _scalar_name(fobj) -> str:
+    entities = fobj.get_entities()
+    name_parts = [entities.get("model"), _parameter_name(fobj), entities.get("desc")]
+    name = "-".join(part for part in name_parts if part)
+    return name or Path(fobj.path).stem

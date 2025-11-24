@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, Optional
 
 from qsiparc.io.data_models import AtlasDefinition
 
@@ -21,14 +21,14 @@ class AtlasRegistry:
     """Simple in-memory registry for atlases."""
 
     def __init__(self) -> None:
-        self._atlases: Dict[str, AtlasResource] = {}
+        self._atlases: dict[str, AtlasResource] = {}
 
     def register(self, resource: AtlasResource) -> None:
         """Add or replace an atlas resource."""
 
         self._atlases[resource.definition.name] = resource
 
-    def get(self, name: str) -> Optional[AtlasResource]:
+    def get(self, name: str) -> AtlasResource | None:
         """Return a resource by name."""
 
         return self._atlases.get(name)

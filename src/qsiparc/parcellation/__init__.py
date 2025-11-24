@@ -1,13 +1,5 @@
-"""Parcellation engines and strategies."""
+"""Functional API for volume parcellation."""
 
-from qsiparc.parcellation.pipeline import ParcellationPlan, ParcellationResult, Parcellator, VolumeParcellator
-from qsiparc.parcellation.strategies import ParcellationStrategy, VolumeParcellationStrategy
+from qsiparc.parcellation.volume import MetricSpec, parcellate_volume
 
-__all__ = [
-    "ParcellationPlan",
-    "ParcellationResult",
-    "Parcellator",
-    "VolumeParcellator",
-    "ParcellationStrategy",
-    "VolumeParcellationStrategy",
-]
+__all__ = ["MetricSpec", "parcellate_volume"]

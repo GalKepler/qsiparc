@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Dict, List
 
 
 @dataclass
@@ -13,10 +12,10 @@ class RunProvenance:
 
     started_at: datetime = field(default_factory=datetime.utcnow)
     finished_at: datetime | None = None
-    parameters: Dict[str, str] = field(default_factory=dict)
-    inputs: List[str] = field(default_factory=list)
-    outputs: List[str] = field(default_factory=list)
-    notes: List[str] = field(default_factory=list)
+    parameters: dict[str, str] = field(default_factory=dict)
+    inputs: list[str] = field(default_factory=list)
+    outputs: list[str] = field(default_factory=list)
+    notes: list[str] = field(default_factory=list)
 
     def mark_finished(self) -> None:
         """Mark the run as finished."""

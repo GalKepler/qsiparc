@@ -2,17 +2,16 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from qsiparc.atlas.registry import AtlasRegistry, AtlasResource
 from qsiparc.config import AtlasSelection, ParcellationConfig
 from qsiparc.io.data_models import AtlasDefinition
 from qsiparc.io.loaders import load_atlas_definition, load_recon_inputs
 from qsiparc.io.validation import validate_inputs
+from qsiparc.parcellation import parcellate_volume
 from qsiparc.provenance import RunProvenance
-from qsiparc.parcellation.pipeline import ParcellationPlan, VolumeParcellator
-from qsiparc.parcellation.strategies import VolumeParcellationStrategy
 
 
 class WorkflowRunner:
@@ -41,14 +40,19 @@ class WorkflowRunner:
             provenance.add_note(warning)
         for recon in recon_inputs:
             provenance.record_input(recon.context.label)
-        # Run a placeholder parcellation pass with the volume strategy.
-        strategy = VolumeParcellationStrategy()
-        parcellator = VolumeParcellator(strategy=strategy)
         for resource in self.atlas_registry.list():
-            plan = ParcellationPlan(atlas=resource, inputs=recon_inputs, strategy=strategy)
-            result = parcellator.run(plan)
-            for label in result.region_summaries:
-                provenance.record_output(f"{resource.definition.name}:{label}")
+            for recon in recon_inputs:
+                for scalar_name, scalar_path in recon.scalar_maps.items():
+                    stats = parcellate_volume(
+                        atlas_path=resource.definition.path,
+                        scalar_path=scalar_path,
+                        metrics=("mean",),
+                        lut=resource.definition.labels,
+                    )
+                    provenance.record_output(
+                        f"{resource.definition.name}:{recon.context.label}:{scalar_name}:"
+                        f"{len(stats)}x1"
+                    )
         provenance.mark_finished()
         return provenance
 
