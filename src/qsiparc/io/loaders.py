@@ -35,7 +35,9 @@ def load_recon_inputs(
         for session_id in ses_list:
             context = SubjectContext(subject_id=subject_id, session_id=session_id)
             scalar_maps = discover_scalar_maps(layout=layout, subject=subject_id, session=session_id)
-            native_atlases = discover_atlases(layout=layout, space="ACPC", subject=subject_id, session=session_id)
+            native_atlases = discover_atlases(
+                layout=layout, space="ACPC", allow_fallback=False, subject=subject_id, session=session_id
+            )
             recon_inputs.append(
                 ReconInput(
                     context=context,
@@ -49,8 +51,8 @@ def load_recon_inputs(
     return recon_inputs
 
 
-def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) -> list[Path]:
-    """Return scalar map paths keyed by map name."""
+def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) -> list[ScalarMapDefinition]:
+    """Return scalar map definitions."""
 
     filters = {
         "subject": subject,
@@ -65,7 +67,7 @@ def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) 
         **filters,
     )
 
-    scalar_maps: Sequence[ScalarMapDefinition] = []
+    scalar_maps: list[ScalarMapDefinition] = []
 
     for fobj in files:
         scalar_maps.append(
@@ -81,7 +83,9 @@ def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) 
     return scalar_maps
 
 
-def discover_atlases(layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", **kwargs) -> list[AtlasDefinition]:
+def discover_atlases(
+    layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", allow_fallback: bool = True, **kwargs
+) -> list[AtlasDefinition]:
     """Return atlas definitions."""
 
     filters = {
@@ -92,6 +96,10 @@ def discover_atlases(layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", **k
     }
 
     atlas_files = layout.get(return_type="object", **filters)
+    if not atlas_files and allow_fallback:
+        # Fallback: drop space constraint if not found
+        fallback = {k: v for k, v in filters.items() if k != "space"}
+        atlas_files = layout.get(return_type="object", **fallback)
 
     atlases: list[AtlasDefinition] = []
     for fobj in atlas_files:
@@ -102,7 +110,7 @@ def discover_atlases(layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", **k
             or Path(fobj.path).stem
         )
         resolution = fobj.get_entities().get("res") or None
-        space = fobj.get_entities().get("space") or None
+        space = fobj.get_entities().get("space") or filters.get("space")
         lut_entities = {"atlas": name, "extension": ["tsv", "csv"]}
         lut_files = layout.get(return_type="object", **lut_entities)
 

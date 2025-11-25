@@ -10,6 +10,7 @@ from qsiparc.config import AtlasSelection, ParcellationConfig
 from qsiparc.io.loaders import load_recon_inputs
 from qsiparc.parcellation.volume import parcellate_volume
 from qsiparc.provenance import RunProvenance
+from qsiparc.workflows.planner import plan_parcellations
 from qsiparc.workflows.runner import WorkflowRunner
 
 
@@ -122,6 +123,20 @@ def test_load_recon_inputs_discovers_atlas_and_scalars(tmp_path: Path) -> None:
     assert recon.atlases[0].name == "aparc"
 
 
+def test_plan_parcellations_matches_space(tmp_path: Path) -> None:
+    _write_dataset_description(tmp_path)
+    _write_scalar_map(tmp_path, subject="01", session=None, desc="fa", space="MNI152NLin2009cAsym")
+    atlas_file = tmp_path / "sub-01" / "anat" / "sub-01_space-MNI152NLin2009cAsym_atlas-aparc_dseg.nii.gz"
+    atlas_file.parent.mkdir(parents=True, exist_ok=True)
+    nib.Nifti1Image(np.ones((2, 2, 1)), affine=np.eye(4)).to_filename(atlas_file)
+    recon_inputs = load_recon_inputs(root=tmp_path, subjects=["01"], sessions=None)
+    jobs = plan_parcellations(recon_inputs)
+    assert len(jobs) == 1
+    job = jobs[0]
+    assert job.space.lower() == "mni152nlin2009casym"
+    assert job.scalar.space.lower() == job.atlas.space.lower()
+
+
 def _write_dataset_description(root: Path) -> None:
     root.mkdir(parents=True, exist_ok=True)
     (root / "dataset_description.json").write_text(
@@ -129,11 +144,13 @@ def _write_dataset_description(root: Path) -> None:
     )
 
 
-def _write_scalar_map(root: Path, subject: str, session: str | None, desc: str) -> Path:
+def _write_scalar_map(root: Path, subject: str, session: str | None, desc: str, space: str | None = None) -> Path:
     parts = [f"sub-{subject}"]
     if session:
         parts.append(f"ses-{session}")
-    name = "_".join([*parts, f"desc-{desc}", "dwi"]) + ".nii.gz"
+    if space:
+        parts.append(f"space-{space}")
+    name = "_".join([*parts, f"desc-{desc}", "dwimap"]) + ".nii.gz"
     subdir = root / f"sub-{subject}"
     if session:
         subdir = subdir / f"ses-{session}"

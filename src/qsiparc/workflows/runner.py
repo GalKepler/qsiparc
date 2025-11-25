@@ -23,9 +23,10 @@ class WorkflowRunner:
     def preload_atlases(self, atlas_root: Path, selections: Iterable[AtlasSelection]) -> None:
         """Load atlas metadata and register the resources."""
 
-        # for selection in selections:
-        # definition = load_atlas_definition(selection=selection, atlas_root=atlas_root)
-        # self.atlas_registry.register(resource=self._resource_from_definition(definition))
+        for selection in selections:
+            atlas_path = selection.path or atlas_root / selection.name
+            definition = AtlasDefinition(name=selection.name, nifti_path=atlas_path)
+            self.atlas_registry.register(resource=self._resource_from_definition(definition))
 
     def run(self, config: ParcellationConfig) -> RunProvenance:
         """Perform validation and record provenance for a run.
@@ -42,15 +43,15 @@ class WorkflowRunner:
             provenance.record_input(recon.context.label)
         for resource in self.atlas_registry.list():
             for recon in recon_inputs:
-                for scalar_name, scalar_path in recon.scalar_maps.items():
+                for scalar in recon.scalar_maps:
                     stats = parcellate_volume(
-                        atlas_path=resource.definition.path,
-                        scalar_path=scalar_path,
+                        atlas_path=resource.definition.nifti_path,
+                        scalar_path=scalar.nifti_path,
                         metrics=("mean",),
-                        lut=resource.definition.labels,
+                        lut=None,
                     )
                     provenance.record_output(
-                        f"{resource.definition.name}:{recon.context.label}:{scalar_name}:{len(stats)}x1"
+                        f"{resource.definition.name}:{recon.context.label}:{scalar.name}:{len(stats)}x1"
                     )
         provenance.mark_finished()
         return provenance
