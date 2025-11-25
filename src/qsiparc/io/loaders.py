@@ -10,25 +10,6 @@ from bids import BIDSLayout
 from qsiparc.config import AtlasSelection
 from qsiparc.io.data_models import AtlasDefinition, ReconInput, ScalarMapDefinition, SubjectContext
 
-SCALAR_SUFFIXES: Sequence[str] = (
-    "FA",
-    "MD",
-    "RD",
-    "AD",
-    "L1",
-    "L2",
-    "L3",
-    "MK",
-    "ODI",
-    "ICVF",
-    "ISOVF",
-    "AFD",
-    "DECFA",
-    "mode",
-    "S0",
-    "dwi",
-)
-
 
 def load_recon_inputs(
     root: Path, subjects: Iterable[str] | None = None, sessions: Iterable[str] | None = None
@@ -55,22 +36,18 @@ def load_recon_inputs(
         for session_id in ses_list:
             context = SubjectContext(subject_id=subject_id, session_id=session_id)
             scalar_maps = discover_scalar_maps(layout=layout, subject=subject_id, session=session_id)
+            native_atlases = discover_atlases(layout=layout, space="ACPC", subject=subject_id, session=session_id)
             recon_inputs.append(
-                ReconInput(context=context, scalar_maps=scalar_maps, atlases=atlases, mask=None, transforms=())
+                ReconInput(
+                    context=context,
+                    scalar_maps=scalar_maps,
+                    atlases=atlases,
+                    native_atlases=native_atlases,
+                    mask=None,
+                    transforms=(),
+                )
             )
     return recon_inputs
-
-
-def load_atlas_definition(selection: AtlasSelection, atlas_root: Path) -> AtlasDefinition:
-    """Load an atlas definition from disk based on a selection.
-
-    This stub records the expected location and yields empty labels. It will
-    eventually validate that files exist and read a label LUT.
-    """
-
-    labels: Mapping[int, str] = {}
-    atlas_path = selection.path or atlas_root / selection.name
-    return AtlasDefinition(name=selection.name, path=atlas_path, labels=labels)
 
 
 def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) -> list[Path]:
@@ -105,13 +82,14 @@ def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) 
     return scalar_maps
 
 
-def discover_atlases(layout: BIDSLayout) -> list[AtlasDefinition]:
+def discover_atlases(layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", **kwargs) -> list[AtlasDefinition]:
     """Return atlas definitions."""
 
     filters = {
-        "space": "MNI152NLin2009cAsym",
+        "space": space,
         "suffix": ["dseg"],
         "extension": ["nii", "nii.gz"],
+        **kwargs,
     }
 
     atlas_files = layout.get(return_type="object", **filters)
@@ -125,11 +103,14 @@ def discover_atlases(layout: BIDSLayout) -> list[AtlasDefinition]:
             or Path(fobj.path).stem
         )
         resolution = fobj.get_entities().get("res") or None
+        space = fobj.get_entities().get("space") or None
         lut_entities = {"atlas": name, "extension": ["tsv", "csv"]}
         lut_files = layout.get(return_type="object", **lut_entities)
 
         lut_path = Path(lut_files[0].path) if lut_files else None
-        atlases.append(AtlasDefinition(name=name, nifti_path=Path(fobj.path), lut=lut_path, resolution=resolution))
+        atlases.append(
+            AtlasDefinition(name=name, nifti_path=Path(fobj.path), lut=lut_path, resolution=resolution, space=space)
+        )
     return atlases
 
 

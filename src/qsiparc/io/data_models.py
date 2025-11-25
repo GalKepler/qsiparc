@@ -31,6 +31,7 @@ class AtlasDefinition:
     nifti_path: Path
     lut: pd.DataFrame | Path | None = None
     resolution: str | None = None
+    space: str | None = None
 
 
 @dataclass(frozen=True)

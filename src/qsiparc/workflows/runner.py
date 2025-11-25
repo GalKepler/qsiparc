@@ -8,7 +8,7 @@ from pathlib import Path
 from qsiparc.atlas.registry import AtlasRegistry, AtlasResource
 from qsiparc.config import AtlasSelection, ParcellationConfig
 from qsiparc.io.data_models import AtlasDefinition
-from qsiparc.io.loaders import load_atlas_definition, load_recon_inputs
+from qsiparc.io.loaders import load_recon_inputs
 from qsiparc.io.validation import validate_inputs
 from qsiparc.parcellation import parcellate_volume
 from qsiparc.provenance import RunProvenance
@@ -23,9 +23,9 @@ class WorkflowRunner:
     def preload_atlases(self, atlas_root: Path, selections: Iterable[AtlasSelection]) -> None:
         """Load atlas metadata and register the resources."""
 
-        for selection in selections:
-            definition = load_atlas_definition(selection=selection, atlas_root=atlas_root)
-            self.atlas_registry.register(resource=self._resource_from_definition(definition))
+        # for selection in selections:
+        # definition = load_atlas_definition(selection=selection, atlas_root=atlas_root)
+        # self.atlas_registry.register(resource=self._resource_from_definition(definition))
 
     def run(self, config: ParcellationConfig) -> RunProvenance:
         """Perform validation and record provenance for a run.
@@ -50,8 +50,7 @@ class WorkflowRunner:
                         lut=resource.definition.labels,
                     )
                     provenance.record_output(
-                        f"{resource.definition.name}:{recon.context.label}:{scalar_name}:"
-                        f"{len(stats)}x1"
+                        f"{resource.definition.name}:{recon.context.label}:{scalar_name}:{len(stats)}x1"
                     )
         provenance.mark_finished()
         return provenance
