@@ -1,5 +1,6 @@
 """High-level orchestration of parcellation runs."""
 
+from qsiparc.workflows.planner import ParcellationJob, plan_parcellations
 from qsiparc.workflows.runner import WorkflowRunner
 
-__all__ = ["WorkflowRunner"]
+__all__ = ["WorkflowRunner", "ParcellationJob", "plan_parcellations"]
