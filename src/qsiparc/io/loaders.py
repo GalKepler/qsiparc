@@ -2,12 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 from bids import BIDSLayout
 
-from qsiparc.config import AtlasSelection
 from qsiparc.io.data_models import AtlasDefinition, ReconInput, ScalarMapDefinition, SubjectContext
 
 
