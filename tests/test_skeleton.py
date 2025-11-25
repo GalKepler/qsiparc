@@ -76,9 +76,11 @@ def test_volume_parcellator_runs_with_placeholder_strategy(tmp_path: Path) -> No
     nib.Nifti1Image(atlas_data, affine=np.eye(4)).to_filename(atlas_path)
     nib.Nifti1Image(scalar_data, affine=np.eye(4)).to_filename(scalar_path)
 
-    stats = parcellate_volume(atlas_path=atlas_path, scalar_path=scalar_path, metrics=("mean", "median"))
-    assert stats["1"]["mean"] == 2.0
-    assert stats["2"]["median"] == 5.0
+    stats = parcellate_volume(atlas_path=atlas_path, scalar_path=scalar_path, metrics=("mean", "median", "iqr_mean"))
+    stats = stats.set_index("index")
+    assert stats.loc["1", "mean"] == 2.0
+    assert stats.loc["2", "median"] == 5.0
+    assert "iqr_mean" in stats.columns
 
 
 def test_parcellate_volume(tmp_path: Path) -> None:
@@ -89,7 +91,9 @@ def test_parcellate_volume(tmp_path: Path) -> None:
     nib.Nifti1Image(atlas_data, affine=np.eye(4)).to_filename(atlas_path)
     nib.Nifti1Image(scalar_data, affine=np.eye(4)).to_filename(scalar_path)
     stats = parcellate_volume(atlas_path=atlas_path, scalar_path=scalar_path, metrics=("mean", "max"))
-    assert stats == {"1": {"mean": 4.0, "max": 6.0}}
+    stats = stats.set_index("index")
+    assert stats.loc["1", "mean"] == 4.0
+    assert stats.loc["1", "max"] == 6.0
 
 
 def test_parcellate_volume_resamples_scalar(tmp_path: Path, caplog: pytest.LogCaptureFixture) -> None:
@@ -103,7 +107,8 @@ def test_parcellate_volume_resamples_scalar(tmp_path: Path, caplog: pytest.LogCa
     stats = parcellate_volume(
         atlas_path=atlas_path, scalar_path=scalar_path, metrics=("mean",), resample_target="labels"
     )
-    assert stats == {"1": {"mean": 5.0}}
+    stats = stats.set_index("index")
+    assert stats.loc["1", "mean"] == 5.0
     assert any("Resampling scalar map to atlas/labels grid" in rec.message for rec in caplog.records)
 
 
@@ -131,9 +136,10 @@ def test_plan_parcellations_matches_space(tmp_path: Path) -> None:
     nib.Nifti1Image(np.ones((2, 2, 1)), affine=np.eye(4)).to_filename(atlas_file)
     recon_inputs = load_recon_inputs(root=tmp_path, subjects=["01"], sessions=None)
     jobs = plan_parcellations(recon_inputs)
-    assert len(jobs) == 1
-    job = jobs[0]
-    assert job.space.lower() == "mni152nlin2009casym"
+    flat = [job for group in jobs.values() for job in group]
+    assert len(flat) == 1
+    job = flat[0]
+    assert (job.scalar.space or "").lower() == "mni152nlin2009casym"
     assert job.scalar.space.lower() == job.atlas.space.lower()
 
 

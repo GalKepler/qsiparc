@@ -3,38 +3,41 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
-from dataclasses import dataclass
-from typing import List
+from typing import Dict, List
 
-from qsiparc.io.data_models import AtlasDefinition, ReconInput, ScalarMapDefinition
-
-
-@dataclass(frozen=True)
-class ParcellationJob:
-    """Pair a scalar map with an atlas in a given space."""
-
-    atlas: AtlasDefinition
-    scalar: ScalarMapDefinition
-    space: str | None
-    context_label: str
+from qsiparc.io.data_models import AtlasDefinition, ReconInput
+from qsiparc.parcellation.jobs import ParcellationJob
+from qsiparc.parcellation.settings import ParcellationSettings
 
 
 def plan_parcellations(
-    recon_inputs: Sequence[ReconInput], spaces: Iterable[str] | None = ("MNI152NLin2009cAsym", "ACPC")
-) -> List[ParcellationJob]:
-    """Create atlas-scalar combinations constrained by space."""
+    recon_inputs: Sequence[ReconInput],
+    spaces: Iterable[str] | None = ("MNI152NLin2009cAsym", "ACPC"),
+    settings: ParcellationSettings | None = None,
+) -> Dict[str, List[ParcellationJob]]:
+    """Create atlas -> list of jobs constrained by space."""
 
     allowed_spaces = {s.lower() for s in spaces} if spaces else None
-    jobs: List[ParcellationJob] = []
+    settings = settings or ParcellationSettings()
+    plan: Dict[str, List[ParcellationJob]] = {}
     for recon in recon_inputs:
         atlases = list(recon.atlases) + list(recon.native_atlases or [])
         for atlas in atlases:
             for scalar in recon.scalar_maps:
                 if not _spaces_compatible(atlas.space, scalar.space, allowed_spaces):
                     continue
-                space = scalar.space or atlas.space
-                jobs.append(ParcellationJob(atlas=atlas, scalar=scalar, space=space, context_label=recon.context.label))
-    return jobs
+                key = f"{atlas.name}:{recon.context.label}"
+                plan.setdefault(key, []).append(
+                    ParcellationJob(
+                        atlas=atlas,
+                        scalar=scalar,
+                        context=recon.context,
+                        metrics=settings.metrics,
+                        resample_target=settings.resample_target,
+                        mask=settings.mask,
+                    )
+                )
+    return plan
 
 
 def _spaces_compatible(atlas_space: str | None, scalar_space: str | None, allowed: set[str] | None) -> bool:

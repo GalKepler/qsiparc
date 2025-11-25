@@ -17,13 +17,46 @@ MetricSpec = str | MetricFunc | tuple[str, MetricFunc]
 
 logger = logging.getLogger(__name__)
 
+
+def _zfiltered_mean(arr: np.ndarray) -> float:
+    if arr.size == 0:
+        return float("nan")
+    mean = np.nanmean(arr)
+    std = np.nanstd(arr)
+    if std == 0:
+        return float(mean)
+    z = (arr - mean) / std
+    filtered = arr[np.abs(z) < 3]
+    return float(np.nanmean(filtered)) if filtered.size else float("nan")
+
+
+def _iqr_mean(arr: np.ndarray) -> float:
+    if arr.size == 0:
+        return float("nan")
+    q1, q3 = np.percentile(arr, [25, 75])
+    mask = (arr >= q1) & (arr <= q3)
+    subset = arr[mask]
+    return float(np.mean(subset)) if subset.size else float("nan")
+
+
+def _mad_median(arr: np.ndarray) -> float:
+    if arr.size == 0:
+        return float("nan")
+    median = np.median(arr)
+    mad = np.median(np.abs(arr - median))
+    return float(mad)
+
+
 _BUILTIN_METRICS: Mapping[str, MetricFunc] = {
-    "mean": lambda arr: float(np.mean(arr)) if arr.size else float("nan"),
-    "median": lambda arr: float(np.median(arr)) if arr.size else float("nan"),
-    "std": lambda arr: float(np.std(arr)) if arr.size else float("nan"),
-    "min": lambda arr: float(np.min(arr)) if arr.size else float("nan"),
-    "max": lambda arr: float(np.max(arr)) if arr.size else float("nan"),
+    "mean": lambda arr: float(np.nanmean(arr)) if arr.size else float("nan"),
+    "median": lambda arr: float(np.nanmedian(arr)) if arr.size else float("nan"),
+    "std": lambda arr: float(np.nanstd(arr)) if arr.size else float("nan"),
+    "min": lambda arr: float(np.nanmin(arr)) if arr.size else float("nan"),
+    "max": lambda arr: float(np.nanmax(arr)) if arr.size else float("nan"),
     "count": lambda arr: float(arr.size),
+    "zfiltered_mean": _zfiltered_mean,
+    "iqr_mean": _iqr_mean,
+    "mad_median": _mad_median,
 }
 
 
@@ -49,13 +82,14 @@ def _resolve_metric_specs(metrics: Sequence[MetricSpec]) -> tuple[list[str], lis
 
 
 def parcellate_volume(
-    atlas_path: Path,
-    scalar_path: Path,
-    metrics: Sequence[MetricSpec] = ("mean",),
+    atlas_path: Path | nib.Nifti1Image,
+    scalar_path: Path | nib.Nifti1Image,
+    metrics: Sequence[MetricSpec] = tuple(_BUILTIN_METRICS.keys()),
     lut: Mapping[int, str] | None = None,
     resample_target: str | None = "labels",
-    output_format: str = "dict",
-) -> dict[str, dict[str, float]] | pd.DataFrame | tuple[dict[str, dict[str, float]], pd.DataFrame]:
+    output_format: str = "dataframe",
+    mask: Path | str | nib.Nifti1Image | None = None,
+) -> pd.DataFrame:
     """Compute distribution metrics per ROI given an atlas and scalar map.
 
     Args:
@@ -63,27 +97,49 @@ def parcellate_volume(
         scalar_path: Path to a scalar map aligned with the atlas.
         metrics: Sequence of metrics to compute; can be builtin names
             (mean, median, std, min, max, count) or callables/ (name, func) tuples.
-        lut: Optional mapping from label integer to human-readable ROI name.
+        lut: Optional mapping from label integer to human-readable ROI name. When provided, the function will
+            include ROI/label columns in the DataFrame and return a DataFrame when `output_format="dict"`.
         resample_target: What to resample if shapes differ: `"labels"`/`"atlas"` (resample scalar to atlas),
             `"data"`/`"scalar"` (resample atlas to scalar), or `None` to raise on mismatch. Mirrors nilearn's
             `resampling_target` semantics.
-        output_format: `"dict"`, `"dataframe"`, or `"both"` for both outputs.
+        output_format: Ignored; always returns a DataFrame with `label` and `index` columns.
+        mask: Optional mask image (atlas space) to zero out labels before metric computation. If a string of
+            "gm", "wm", or "csf" is provided, nilearn's corresponding MNI mask loader will be used.
 
     Returns:
         Dictionary keyed by ROI name to metric values, a pandas DataFrame, or both depending on `output_format`.
     """
 
-    atlas_img = nib.load(str(atlas_path))
-    scalar_img = nib.load(str(scalar_path))
+    atlas_img = nib.load(str(atlas_path)) if isinstance(atlas_path, Path) else atlas_path
+    scalar_img = nib.load(str(scalar_path)) if isinstance(scalar_path, Path) else scalar_path
     atlas_img, scalar_img = _ensure_aligned(atlas_img=atlas_img, scalar_img=scalar_img, resample_target=resample_target)
     atlas = np.asanyarray(atlas_img.dataobj, dtype=int)
     scalars = np.asanyarray(scalar_img.dataobj, dtype=float)
+    if mask is not None:
+        mask_img = _load_mask(mask)
+        if mask_img.shape != atlas_img.shape:
+            mask_img = resample_from_to(mask_img, atlas_img, order=0)
+        mask_data = np.asanyarray(mask_img.dataobj, dtype=bool)
+        atlas = np.where(mask_data, atlas, 0)
 
     metric_names, metric_funcs = _resolve_metric_specs(metrics)
 
-    labels = np.unique(atlas)
-    labels = labels[labels > 0]  # drop background
-    roi_names = [lut[label] if lut and label in lut else str(int(label)) for label in labels]
+    if lut is None:
+        labels = np.unique(atlas)
+        labels = labels[labels > 0]  # drop background
+        roi_names = [str(int(label)) for label in labels]
+        lut_names: list[str | int] = roi_names
+    else:
+        # lut may be a mapping or path; if mapping, keep the label order from the atlas.
+        if isinstance(lut, Path):
+            parcels = pd.read_csv(lut, sep="\t")
+            label_to_name = dict(zip(parcels["index"], parcels["label"]))
+        else:
+            label_to_name = dict(lut)
+        labels = np.unique(atlas)
+        labels = labels[labels > 0]
+        roi_names = [str(int(label)) for label in labels]
+        lut_names = [label_to_name.get(int(label), str(int(label))) for label in labels]
 
     values = np.zeros((len(labels), len(metric_funcs)), dtype=float)
     for i, label in enumerate(labels):
@@ -91,18 +147,12 @@ def parcellate_volume(
         roi_values = scalars[mask]
         for j, func in enumerate(metric_funcs):
             values[i, j] = func(roi_values)
-    stats_dict: dict[str, dict[str, float]] = {
-        roi: {metric: float(values[i, j]) for j, metric in enumerate(metric_names)} for i, roi in enumerate(roi_names)
-    }
     df = pd.DataFrame(values, index=roi_names, columns=metric_names)
-
-    if output_format == "dict":
-        return stats_dict
-    if output_format == "dataframe":
-        return df
-    if output_format == "both":
-        return stats_dict, df
-    raise ValueError(f"Unknown output_format: {output_format}")
+    df.insert(0, "index", roi_names)
+    df.insert(1, "label", list(labels.astype(int)))
+    if lut is not None:
+        df.insert(2, "name", lut_names)
+    return df
 
 
 def _ensure_aligned(
@@ -131,3 +181,25 @@ def _ensure_aligned(
     else:
         raise ValueError(f"Unknown resample_target: {resample_target}")
     return atlas_img, scalar_img
+
+
+def _load_mask(mask: Path | str | nib.Nifti1Image) -> nib.Nifti1Image:
+    """Load a mask from path, image, or nilearn keyword."""
+
+    if isinstance(mask, nib.spatialimages.SpatialImage):
+        return mask
+    if isinstance(mask, Path):
+        return nib.load(str(mask))
+    if isinstance(mask, str):
+        from nilearn import datasets
+
+        key = mask.lower()
+        if key == "gm":
+            return datasets.load_mni152_gm_mask()
+        if key == "wm":
+            return datasets.load_mni152_wm_mask()
+        if key == "csf":
+            return datasets.load_mni152_csf_mask()
+        # fallback to loading as a path-like string
+        return nib.load(mask)
+    raise ValueError(f"Unsupported mask type: {type(mask)}")
