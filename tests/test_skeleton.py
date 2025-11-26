@@ -159,6 +159,26 @@ def test_plan_parcellations_matches_space(tmp_path: Path) -> None:
     assert job.scalar.space.lower() == job.atlas.space.lower()
 
 
+def test_runner_uses_loader_and_planner(tmp_path: Path) -> None:
+    _write_dataset_description(tmp_path)
+    _write_scalar_map(tmp_path, subject="01", session=None, desc="fa", space="MNI152NLin2009cAsym")
+    atlas_file = tmp_path / "sub-01" / "anat" / "sub-01_space-MNI152NLin2009cAsym_atlas-aparc_dseg.nii.gz"
+    atlas_file.parent.mkdir(parents=True, exist_ok=True)
+    nib.Nifti1Image(np.ones((2, 2, 1)), affine=np.eye(4)).to_filename(atlas_file)
+
+    config = ParcellationConfig(
+        input_root=tmp_path,
+        output_root=tmp_path / "outputs",
+        subjects=("01",),
+        atlases=[],
+    )
+    runner = WorkflowRunner()
+    provenance = runner.run(config)
+
+    assert provenance.outputs
+    assert any("aparc:sub-01" in entry for entry in provenance.outputs)
+
+
 def _write_dataset_description(root: Path) -> None:
     root.mkdir(parents=True, exist_ok=True)
     (root / "dataset_description.json").write_text(
