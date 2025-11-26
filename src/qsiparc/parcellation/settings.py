@@ -25,7 +25,14 @@ class ParcellationSettings:
 
 
 def load_settings(path: Path) -> ParcellationSettings:
-    """Load parcellation settings from a TOML file."""
+    """Load parcellation settings from a TOML file.
+
+    Expected layout:
+    [parcellation]
+    metrics = ["mean", "median"]
+    resample_target = "labels"
+    mask = "gm"  # or path
+    """
 
     data = tomllib.loads(path.read_text())
     section = data.get("parcellation", {})

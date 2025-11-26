@@ -4,4 +4,6 @@
 # Resampling target when atlas/scalar shapes differ: "labels"/"atlas" (resample scalar to atlas) or "data"/"scalar" (resample atlas to scalar)
 resample_target = "labels"
 # Optional mask: path to a NIfTI mask or one of "gm", "wm", "csf" (nilearn MNI masks)
-# mask = "gm"
+mask = "gm"
+
+output_root = "/media/storage/yalab-dev/qsiprep_test/derivatives/qsiparc"

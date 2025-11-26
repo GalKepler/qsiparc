@@ -21,7 +21,7 @@ def plan_parcellations(
     settings = settings or ParcellationSettings()
     plan: Dict[str, List[ParcellationJob]] = {}
     for recon in recon_inputs:
-        atlases = list(recon.atlases) + list(recon.native_atlases or [])
+        atlases = list(recon.atlases)
         for atlas in atlases:
             for scalar in recon.scalar_maps:
                 if not _spaces_compatible(atlas.space, scalar.space, allowed_spaces):

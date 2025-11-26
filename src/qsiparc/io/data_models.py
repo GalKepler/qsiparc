@@ -52,6 +52,5 @@ class ReconInput:
     context: SubjectContext
     atlases: Sequence[AtlasDefinition]
     scalar_maps: Sequence[ScalarMapDefinition]
-    native_atlases: Sequence[AtlasDefinition] | None = None
     mask: Path | None = None
     transforms: Sequence[Path] = ()

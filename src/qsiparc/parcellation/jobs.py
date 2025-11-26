@@ -17,7 +17,16 @@ if TYPE_CHECKING:  # pragma: no cover
 
 @dataclass(frozen=True)
 class ParcellationJob:
-    """Pair a scalar map with an atlas in a given space."""
+    """Pair a scalar map with an atlas in a given space.
+
+    Attributes:
+        atlas: Atlas definition (path, metadata).
+        scalar: Scalar map definition (path, metadata).
+        context: Subject/session context.
+        metrics: Metrics to compute per ROI (built-in names or callables).
+        resample_target: How to reconcile atlas/scalar grids ("labels"/"data"/None).
+        mask: Optional mask (path/keyword/image) applied before aggregation.
+    """
 
     atlas: AtlasDefinition
     scalar: ScalarMapDefinition

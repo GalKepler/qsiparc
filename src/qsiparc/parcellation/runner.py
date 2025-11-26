@@ -47,7 +47,11 @@ def run_parcellation(
 
 
 def _maybe_resample_atlas(job: ParcellationJob, cache: Dict[str, Path]) -> nib.Nifti1Image:
-    """Resample atlas once per atlas-scalar grid when targeting data."""
+    """Resample atlas once per atlas-scalar grid when targeting data.
+
+    - If target is not data/scalar, return atlas as-is.
+    - Cache resampled atlases keyed by atlas+scalar path combo.
+    """
 
     if job.resample_target not in {"scalar", "data"}:
         return nib.load(job.atlas.nifti_path)
@@ -64,16 +68,33 @@ def _maybe_resample_atlas(job: ParcellationJob, cache: Dict[str, Path]) -> nib.N
 
 
 def _write_output(base: Path, job: ParcellationJob, payload) -> Path:
-    """Write per-job output to disk."""
+    """Write per-job output to disk using a BIDS-like filename."""
 
-    base.mkdir(parents=True, exist_ok=True)
-    fname = f"{job.context.label}_{job.scalar.name}_{job.atlas.name}.csv"
-    path = base / fname
+    parts = [f"sub-{job.context.subject_id}"]
+    if job.context.session_id:
+        parts.append(f"ses-{job.context.session_id}")
+    space = job.atlas.space or job.scalar.space
+    if space:
+        parts.append(f"space-{space}")
+    if job.atlas.resolution:
+        parts.append(f"res-{job.atlas.resolution}")
+    parts.append(f"atlas-{job.atlas.name}")
+    parts.append(f"desc-{job.scalar.name}")
+    fname = "_".join(parts) + "_parc.tsv"
+
+    dest = base / f"sub-{job.context.subject_id}"
+    if job.context.session_id:
+        dest = dest / f"ses-{job.context.session_id}"
+    # QSIRecon places scalar maps under dwi/; keep the same sub/ses/dwi structure for parcellation tables.
+    dest = dest / "dwi"
+    dest.mkdir(parents=True, exist_ok=True)
+    path = dest / fname
+
     if hasattr(payload, "to_csv"):
-        payload.to_csv(path)
+        payload.to_csv(path, sep="\t", index=False)
     else:
         import pandas as pd
 
-        df = pd.DataFrame(payload).T
-        df.to_csv(path)
+        df = pd.DataFrame(payload).T.reset_index()
+        df.to_csv(path, sep="\t", index=False)
     return path

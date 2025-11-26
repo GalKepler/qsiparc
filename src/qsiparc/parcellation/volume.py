@@ -1,11 +1,16 @@
-"""Volume parcellation utilities."""
+"""Volume parcellation utilities.
+
+The core entrypoint `parcellate_volume` returns a pandas DataFrame with per-ROI
+statistics computed over a scalar map, aligned to an atlas. Masking, LUT
+labeling, resampling, and custom metrics are supported.
+"""
 
 from __future__ import annotations
 
 import logging
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Union
 
 import nibabel as nib
 import numpy as np
@@ -14,11 +19,13 @@ from nibabel.processing import resample_from_to
 
 MetricFunc = Callable[[np.ndarray], float]
 MetricSpec = str | MetricFunc | tuple[str, MetricFunc]
+ImageLike = Union[Path, nib.Nifti1Image]
 
 logger = logging.getLogger(__name__)
 
 
-def _zfiltered_mean(arr: np.ndarray) -> float:
+def _zfiltered_mean(arr: np.ndarray, threshold: float = 3.0) -> float:
+    """Mean after removing values with |z| >= threshold."""
     if arr.size == 0:
         return float("nan")
     mean = np.nanmean(arr)
@@ -26,11 +33,12 @@ def _zfiltered_mean(arr: np.ndarray) -> float:
     if std == 0:
         return float(mean)
     z = (arr - mean) / std
-    filtered = arr[np.abs(z) < 3]
+    filtered = arr[np.abs(z) < threshold]
     return float(np.nanmean(filtered)) if filtered.size else float("nan")
 
 
 def _iqr_mean(arr: np.ndarray) -> float:
+    """Mean of values within the interquartile range."""
     if arr.size == 0:
         return float("nan")
     q1, q3 = np.percentile(arr, [25, 75])
@@ -40,6 +48,7 @@ def _iqr_mean(arr: np.ndarray) -> float:
 
 
 def _mad_median(arr: np.ndarray) -> float:
+    """Median absolute deviation around the median."""
     if arr.size == 0:
         return float("nan")
     median = np.median(arr)
@@ -61,6 +70,8 @@ _BUILTIN_METRICS: Mapping[str, MetricFunc] = {
 
 
 def _resolve_metric_specs(metrics: Sequence[MetricSpec]) -> tuple[list[str], list[MetricFunc]]:
+    """Normalize metric specifications into names and callables."""
+
     names: list[str] = []
     funcs: list[MetricFunc] = []
     if not metrics:
@@ -82,12 +93,12 @@ def _resolve_metric_specs(metrics: Sequence[MetricSpec]) -> tuple[list[str], lis
 
 
 def parcellate_volume(
-    atlas_path: Path | nib.Nifti1Image,
-    scalar_path: Path | nib.Nifti1Image,
+    atlas_path: ImageLike,
+    scalar_path: ImageLike,
     metrics: Sequence[MetricSpec] = tuple(_BUILTIN_METRICS.keys()),
     lut: Mapping[int, str] | None = None,
     resample_target: str | None = "labels",
-    output_format: str = "dataframe",
+    output_format: str | None = None,
     mask: Path | str | nib.Nifti1Image | None = None,
 ) -> pd.DataFrame:
     """Compute distribution metrics per ROI given an atlas and scalar map.
@@ -107,11 +118,11 @@ def parcellate_volume(
             "gm", "wm", or "csf" is provided, nilearn's corresponding MNI mask loader will be used.
 
     Returns:
-        Dictionary keyed by ROI name to metric values, a pandas DataFrame, or both depending on `output_format`.
+        Pandas DataFrame indexed by ROI with metric columns (plus label/name metadata).
     """
 
-    atlas_img = nib.load(str(atlas_path)) if isinstance(atlas_path, Path) else atlas_path
-    scalar_img = nib.load(str(scalar_path)) if isinstance(scalar_path, Path) else scalar_path
+    atlas_img = _ensure_img(atlas_path)
+    scalar_img = _ensure_img(scalar_path)
     atlas_img, scalar_img = _ensure_aligned(atlas_img=atlas_img, scalar_img=scalar_img, resample_target=resample_target)
     atlas = np.asanyarray(atlas_img.dataobj, dtype=int)
     scalars = np.asanyarray(scalar_img.dataobj, dtype=float)
@@ -181,6 +192,12 @@ def _ensure_aligned(
     else:
         raise ValueError(f"Unknown resample_target: {resample_target}")
     return atlas_img, scalar_img
+
+
+def _ensure_img(img: ImageLike) -> nib.Nifti1Image:
+    """Return a loaded NIfTI image from a path or existing image."""
+
+    return nib.load(str(img)) if isinstance(img, Path) else img
 
 
 def _load_mask(mask: Path | str | nib.Nifti1Image) -> nib.Nifti1Image:

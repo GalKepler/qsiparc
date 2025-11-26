@@ -35,15 +35,11 @@ def load_recon_inputs(
         for session_id in ses_list:
             context = SubjectContext(subject_id=subject_id, session_id=session_id)
             scalar_maps = discover_scalar_maps(layout=layout, subject=subject_id, session=session_id)
-            native_atlases = discover_atlases(
-                layout=layout, space="ACPC", allow_fallback=False, subject=subject_id, session=session_id
-            )
             recon_inputs.append(
                 ReconInput(
                     context=context,
                     scalar_maps=scalar_maps,
                     atlases=atlases,
-                    native_atlases=native_atlases,
                     mask=None,
                     transforms=(),
                 )
