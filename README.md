@@ -24,6 +24,27 @@ A lightweight Python package for parcellating QSIPrep/QSIRecon diffusion MRI out
 - `qsiparc/reporting/`: minimal report builder for run notes; will host QC/report outputs.
 - `qsiparc/cli.py`: thin CLI wrapper that builds config, preloads user-provided atlases, runs the workflow, and writes a summary.
 
+## TOML configuration
+
+You can run the workflow from a single TOML file instead of passing every argument on the command line:
+
+```
+[parcellation]
+input_root = "/path/to/qsirecon/derivatives"
+output_root = "/path/to/qsiparc/derivatives"
+subjects = ["01", "02"]
+
+[[parcellation.atlases]]
+name = "aal"
+path = "/path/to/atlases/aal.nii.gz"
+```
+
+Run the workflow with:
+
+```
+qsiparc --config parcellation.toml
+```
+
 Atlases are not bundled with the package; point the CLI at paths on disk or those emitted by QSIRecon.
 
 ### Next steps
