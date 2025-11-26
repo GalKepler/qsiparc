@@ -24,7 +24,6 @@ def load_recon_inputs(
     entities = layout.get_entities()
     subj_list = list(subjects) if subjects else layout.get_subjects()
     recon_inputs: list[ReconInput] = []
-    atlases = discover_atlases(layout=layout)
     for subject_id in subj_list:
         if sessions:
             ses_list = list(sessions)
@@ -35,6 +34,7 @@ def load_recon_inputs(
         for session_id in ses_list:
             context = SubjectContext(subject_id=subject_id, session_id=session_id)
             scalar_maps = discover_scalar_maps(layout=layout, subject=subject_id, session=session_id)
+            atlases = discover_atlases(layout=layout, subject=subject_id, session=session_id)
             recon_inputs.append(
                 ReconInput(
                     context=context,
@@ -80,7 +80,12 @@ def discover_scalar_maps(layout: BIDSLayout, subject: str, session: str | None) 
 
 
 def discover_atlases(
-    layout: BIDSLayout, space: str = "MNI152NLin2009cAsym", allow_fallback: bool = True, **kwargs
+    layout: BIDSLayout,
+    space: str = "MNI152NLin2009cAsym",
+    allow_fallback: bool = True,
+    subject: str | None = None,
+    session: str | None = None,
+    **kwargs,
 ) -> list[AtlasDefinition]:
     """Return atlas definitions."""
 
@@ -88,8 +93,12 @@ def discover_atlases(
         "space": space,
         "suffix": ["dseg"],
         "extension": ["nii", "nii.gz"],
+        "subject": subject,
+        "session": session,
         **kwargs,
     }
+
+    filters = {k: v for k, v in filters.items() if v is not None}
 
     atlas_files = layout.get(return_type="object", **filters)
     if not atlas_files and allow_fallback:
