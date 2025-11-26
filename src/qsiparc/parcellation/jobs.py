@@ -8,6 +8,7 @@ from typing import Mapping, Sequence, TYPE_CHECKING
 
 import pandas as pd
 
+from qsiparc.metrics import DEFAULT_ROI_METRIC_NAMES
 from qsiparc.io.data_models import AtlasDefinition, ScalarMapDefinition, SubjectContext
 from qsiparc.parcellation.volume import MetricSpec
 
@@ -31,7 +32,7 @@ class ParcellationJob:
     atlas: AtlasDefinition
     scalar: ScalarMapDefinition
     context: SubjectContext
-    metrics: Sequence[MetricSpec] = ("mean",)
+    metrics: Sequence[MetricSpec] = DEFAULT_ROI_METRIC_NAMES
     resample_target: str | None = "labels"
     mask: Path | str | "nib.Nifti1Image" | None = None
 

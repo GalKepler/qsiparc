@@ -5,6 +5,7 @@ import numpy as np
 
 from qsiparc.metrics.metrics import (
     BUILTIN_METRICS,
+    DEFAULT_ROI_METRIC_NAMES,
     ROI_METRICS,
     compute_metrics,
     compute_roi_metrics,
@@ -12,6 +13,7 @@ from qsiparc.metrics.metrics import (
     get_roi_metric,
     list_builtin_metrics,
     list_roi_metrics,
+    resolve_roi_metric_specs,
 )
 from qsiparc.parcellation.jobs import ParcellationJob, ParcellationResult
 
@@ -64,3 +66,16 @@ def test_compute_roi_metrics_handles_nans() -> None:
 
 def test_get_roi_metric_handles_missing() -> None:
     assert get_roi_metric("missing") is None
+
+
+def test_resolve_roi_metric_specs_supports_aliases() -> None:
+    names, funcs = resolve_roi_metric_specs(["mean", "iqr_mean"])
+    assert names == ["mean", "iqr_mean"]
+    arr = np.array([1.0, 2.0, 3.0])
+    assert funcs[0](arr) == np.nanmean(arr)
+    assert funcs[1](arr) == 2.0
+
+
+def test_resolve_roi_metric_specs_defaults_to_builtins() -> None:
+    names, _ = resolve_roi_metric_specs(None)
+    assert set(names) == set(DEFAULT_ROI_METRIC_NAMES)
