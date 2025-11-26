@@ -7,7 +7,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-import tomllib
+try:  # Python 3.11+
+    import tomllib
+except ModuleNotFoundError:  # pragma: no cover
+    import tomli as tomllib  # type: ignore[no-redef]
 
 
 @dataclass(frozen=True)
