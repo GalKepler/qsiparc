@@ -10,92 +10,26 @@ from __future__ import annotations
 import logging
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import Callable, Union
+from typing import Union
 
 import nibabel as nib
 import numpy as np
 import pandas as pd
 from nibabel.processing import resample_from_to
 
-MetricFunc = Callable[[np.ndarray], float]
-MetricSpec = str | MetricFunc | tuple[str, MetricFunc]
+from qsiparc.metrics import DEFAULT_ROI_METRIC_NAMES, resolve_roi_metric_specs
+from qsiparc.metrics.metrics import RoiMetricSpec
+
+MetricSpec = RoiMetricSpec
 ImageLike = Union[Path, nib.Nifti1Image]
 
 logger = logging.getLogger(__name__)
 
 
-def _zfiltered_mean(arr: np.ndarray, threshold: float = 3.0) -> float:
-    """Mean after removing values with |z| >= threshold."""
-    if arr.size == 0:
-        return float("nan")
-    mean = np.nanmean(arr)
-    std = np.nanstd(arr)
-    if std == 0:
-        return float(mean)
-    z = (arr - mean) / std
-    filtered = arr[np.abs(z) < threshold]
-    return float(np.nanmean(filtered)) if filtered.size else float("nan")
-
-
-def _iqr_mean(arr: np.ndarray) -> float:
-    """Mean of values within the interquartile range."""
-    if arr.size == 0:
-        return float("nan")
-    q1, q3 = np.percentile(arr, [25, 75])
-    mask = (arr >= q1) & (arr <= q3)
-    subset = arr[mask]
-    return float(np.mean(subset)) if subset.size else float("nan")
-
-
-def _mad_median(arr: np.ndarray) -> float:
-    """Median absolute deviation around the median."""
-    if arr.size == 0:
-        return float("nan")
-    median = np.median(arr)
-    mad = np.median(np.abs(arr - median))
-    return float(mad)
-
-
-_BUILTIN_METRICS: Mapping[str, MetricFunc] = {
-    "mean": lambda arr: float(np.nanmean(arr)) if arr.size else float("nan"),
-    "median": lambda arr: float(np.nanmedian(arr)) if arr.size else float("nan"),
-    "std": lambda arr: float(np.nanstd(arr)) if arr.size else float("nan"),
-    "min": lambda arr: float(np.nanmin(arr)) if arr.size else float("nan"),
-    "max": lambda arr: float(np.nanmax(arr)) if arr.size else float("nan"),
-    "count": lambda arr: float(arr.size),
-    "zfiltered_mean": _zfiltered_mean,
-    "iqr_mean": _iqr_mean,
-    "mad_median": _mad_median,
-}
-
-
-def _resolve_metric_specs(metrics: Sequence[MetricSpec]) -> tuple[list[str], list[MetricFunc]]:
-    """Normalize metric specifications into names and callables."""
-
-    names: list[str] = []
-    funcs: list[MetricFunc] = []
-    if not metrics:
-        metrics = ("mean",)
-    for spec in metrics:
-        if isinstance(spec, str):
-            if spec not in _BUILTIN_METRICS:
-                raise ValueError(f"Unknown metric: {spec}")
-            names.append(spec)
-            funcs.append(_BUILTIN_METRICS[spec])
-        elif callable(spec):
-            names.append(getattr(spec, "__name__", "custom_metric"))
-            funcs.append(spec)  # type: ignore[arg-type]
-        else:
-            metric_name, metric_func = spec  # type: ignore[misc]
-            names.append(metric_name)
-            funcs.append(metric_func)
-    return names, funcs
-
-
 def parcellate_volume(
     atlas_path: ImageLike,
     scalar_path: ImageLike,
-    metrics: Sequence[MetricSpec] = tuple(_BUILTIN_METRICS.keys()),
+    metrics: Sequence[MetricSpec] | None = None,
     lut: Mapping[int, str] | None = None,
     resample_target: str | None = "labels",
     output_format: str | None = None,
@@ -106,8 +40,10 @@ def parcellate_volume(
     Args:
         atlas_path: Path to an integer-labeled parcellation image.
         scalar_path: Path to a scalar map aligned with the atlas.
-        metrics: Sequence of metrics to compute; can be builtin names
-            (mean, median, std, min, max, count) or callables/ (name, func) tuples.
+        metrics: Sequence of metrics to compute; can be built-in ROI metric names
+            (see ``qsiparc.metrics.ROI_METRICS``), legacy aliases (mean, median, std,
+            min, max, count, zfiltered_mean, iqr_mean), callables, or (name, func)
+            tuples. Defaults to all built-in ROI metrics.
         lut: Optional mapping from label integer to human-readable ROI name. When provided, the function will
             include ROI/label columns in the DataFrame and return a DataFrame when `output_format="dict"`.
         resample_target: What to resample if shapes differ: `"labels"`/`"atlas"` (resample scalar to atlas),
@@ -133,7 +69,7 @@ def parcellate_volume(
         mask_data = np.asanyarray(mask_img.dataobj, dtype=bool)
         atlas = np.where(mask_data, atlas, 0)
 
-    metric_names, metric_funcs = _resolve_metric_specs(metrics)
+    metric_names, metric_funcs = resolve_roi_metric_specs(metrics, default=DEFAULT_ROI_METRIC_NAMES)
 
     if lut is None:
         labels = np.unique(atlas)

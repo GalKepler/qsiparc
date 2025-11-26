@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, List, Optional, Sequence
+from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence
 
 import numpy as np
 
@@ -12,6 +12,7 @@ from qsiparc.parcellation.jobs import ParcellationResult
 
 MetricFn = Callable[[ParcellationResult], float]
 RoiMetricFn = Callable[[np.ndarray], float]
+RoiMetricSpec = str | RoiMetricFn | tuple[str, RoiMetricFn]
 
 
 @dataclass(frozen=True)
@@ -121,6 +122,21 @@ ROI_METRICS: Dict[str, RoiStatistic] = {
     ),
 }
 
+# Map legacy/alias names to canonical ROI statistics.
+ROI_METRIC_ALIASES: Mapping[str, str] = {
+    "mean": "nanmean",
+    "median": "nanmedian",
+    "std": "nanstd",
+    "min": "nanmin",
+    "max": "nanmax",
+    "count": "count",
+    "zfiltered_mean": "zfmean",
+    "iqr_mean": "iqrmean",
+}
+
+# Default ROI metric names used by parcellation.
+DEFAULT_ROI_METRIC_NAMES: tuple[str, ...] = tuple(ROI_METRICS.keys())
+
 
 def _region_count(result: ParcellationResult) -> float:
     """Count regions that have summaries."""
@@ -195,13 +211,50 @@ def get_roi_metric(name: str) -> Optional[RoiStatistic]:
     return ROI_METRICS.get(name)
 
 
+def resolve_roi_metric_specs(
+    metrics: Sequence[RoiMetricSpec] | None,
+    *,
+    default: Sequence[str] | None = None,
+) -> tuple[list[str], list[RoiMetricFn]]:
+    """Normalize ROI metric specifications into names and callables.
+
+    Metric specifications can be:
+    - a string corresponding to a built-in ROI metric (with aliases handled),
+    - a callable, whose ``__name__`` (or ``"custom_metric"``) is used as the column name,
+    - a (name, callable) tuple for explicit naming.
+    """
+
+    names: list[str] = []
+    funcs: list[RoiMetricFn] = []
+    specs: Sequence[RoiMetricSpec] = metrics or tuple(default or DEFAULT_ROI_METRIC_NAMES)
+
+    for spec in specs:
+        if isinstance(spec, str):
+            lookup_name = ROI_METRIC_ALIASES.get(spec, spec)
+            metric = get_roi_metric(lookup_name)
+            if metric is None:
+                raise ValueError(f"Unknown metric: {spec}")
+            names.append(spec)
+            funcs.append(metric.compute)
+            continue
+
+        if callable(spec):
+            names.append(getattr(spec, "__name__", "custom_metric"))
+            funcs.append(spec)
+            continue
+
+        metric_name, metric_func = spec  # type: ignore[misc]
+        names.append(metric_name)
+        funcs.append(metric_func)
+
+    return names, funcs
+
+
 def compute_roi_metrics(names: Sequence[str], values: np.ndarray) -> Dict[str, float]:
     """Compute ROI-level statistics on an array of voxel values."""
 
+    metric_names, metric_funcs = resolve_roi_metric_specs(names)
     results: Dict[str, float] = {}
-    for name in names:
-        metric = get_roi_metric(name)
-        if metric is None:
-            continue
-        results[name] = metric.compute(values)
+    for name, func in zip(metric_names, metric_funcs):
+        results[name] = func(values)
     return results
