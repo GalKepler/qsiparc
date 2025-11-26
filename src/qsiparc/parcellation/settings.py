@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Sequence
 
-from qsiparc.parcellation.volume import MetricSpec, _BUILTIN_METRICS
+from qsiparc.parcellation.volume import MetricSpec, DEFAULT_ROI_METRIC_NAMES
 
 try:  # Python 3.11+
     import tomllib  # type: ignore[import]
@@ -18,7 +18,7 @@ except ModuleNotFoundError:  # pragma: no cover
 class ParcellationSettings:
     """Pipeline settings controlling metrics, resampling, and output format."""
 
-    metrics: Sequence[MetricSpec] = tuple(_BUILTIN_METRICS.keys())
+    metrics: Sequence[MetricSpec] = DEFAULT_ROI_METRIC_NAMES
     resample_target: str | None = "labels"
     extra: Mapping[str, str] | None = None
     mask: Path | str | None = None
@@ -36,7 +36,7 @@ def load_settings(path: Path) -> ParcellationSettings:
 
     data = tomllib.loads(path.read_text())
     section = data.get("parcellation", {})
-    metrics = tuple(section.get("metrics", _BUILTIN_METRICS.keys()))
+    metrics = tuple(section.get("metrics", DEFAULT_ROI_METRIC_NAMES))
     resample_target = section.get("resample_target", "labels")
     extra = section.get("extra", None)
     mask_value = section.get("mask")

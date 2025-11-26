@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Dict, Iterable, List, Mapping, Optional, Sequence
+from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Mapping, Optional, Sequence
 
 import numpy as np
 
-from qsiparc.parcellation.jobs import ParcellationResult
+if TYPE_CHECKING:  # pragma: no cover
+    from qsiparc.parcellation.jobs import ParcellationResult
 
 
-MetricFn = Callable[[ParcellationResult], float]
+MetricFn = Callable[["ParcellationResult"], float]
 RoiMetricFn = Callable[[np.ndarray], float]
 RoiMetricSpec = str | RoiMetricFn | tuple[str, RoiMetricFn]
 
