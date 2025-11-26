@@ -6,7 +6,12 @@ import argparse
 from collections.abc import Iterable
 from pathlib import Path
 
-from qsiparc.config import AtlasSelection, MetricSelection, ParcellationConfig
+from qsiparc.config import (
+    AtlasSelection,
+    MetricSelection,
+    ParcellationConfig,
+    load_parcellation_config,
+)
 from qsiparc.reporting.reports import ReportBuilder
 from qsiparc.workflows.runner import WorkflowRunner
 
@@ -15,9 +20,10 @@ def build_parser() -> argparse.ArgumentParser:
     """Return the top-level argument parser."""
 
     parser = argparse.ArgumentParser(description="Parcellate QSIRecon outputs into atlas-level summaries.")
-    parser.add_argument("--input-root", required=True, type=Path, help="Root directory containing QSIRecon outputs.")
-    parser.add_argument("--output-root", required=True, type=Path, help="Destination for parcellation outputs.")
-    parser.add_argument("--subject", action="append", required=True, help="Subject label to include (repeatable).")
+    parser.add_argument("--config", type=Path, help="Path to a TOML config file defining a parcellation run.")
+    parser.add_argument("--input-root", type=Path, help="Root directory containing QSIRecon outputs.")
+    parser.add_argument("--output-root", type=Path, help="Destination for parcellation outputs.")
+    parser.add_argument("--subject", action="append", help="Subject label to include (repeatable).")
     parser.add_argument(
         "--atlas",
         action="append",
@@ -29,8 +35,22 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def parse_config(args: argparse.Namespace) -> ParcellationConfig:
+def parse_config(args: argparse.Namespace, parser: argparse.ArgumentParser | None = None) -> ParcellationConfig:
     """Translate CLI arguments into a ParcellationConfig."""
+
+    if args.config:
+        return load_parcellation_config(args.config)
+
+    missing = [
+        flag
+        for flag in ("--input-root", "--output-root", "--subject")
+        if getattr(args, flag[2:].replace("-", "_")) is None
+    ]
+    if missing:
+        message = f"Missing required arguments: {', '.join(missing)}"
+        if parser:
+            parser.error(message)
+        raise ValueError(message)
 
     atlases: list[AtlasSelection] = [AtlasSelection(name=path.stem, path=path) for path in args.atlas]
     metrics = MetricSelection(names=("mean", "median"), connectivity=False)
@@ -49,7 +69,7 @@ def run_cli(argv: Iterable[str] | None = None) -> int:
 
     parser = build_parser()
     args = parser.parse_args(list(argv) if argv is not None else None)
-    config = parse_config(args)
+    config = parse_config(args, parser=parser)
     config.ensure_output_root()
     runner = WorkflowRunner()
     runner.preload_atlases(atlas_root=config.input_root, selections=config.atlases)

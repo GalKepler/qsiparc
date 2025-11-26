@@ -33,7 +33,8 @@ def test_workflow_runner_records_provenance(tmp_path: Path) -> None:
     assert provenance.outputs
 
 
-def test_cli_runs_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize("use_config", [False, True])
+def test_cli_runs_end_to_end(tmp_path: Path, use_config: bool) -> None:
     input_root = tmp_path / "inputs"
     output_root = tmp_path / "outputs"
     input_root.mkdir()
@@ -51,6 +52,21 @@ def test_cli_runs_end_to_end(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
         "--atlas",
         str(atlas_path),
     ]
+    if use_config:
+        config_file = tmp_path / "config.toml"
+        config_file.write_text(
+            f"""
+[parcellation]
+input_root = "{input_root}"
+output_root = "{output_root}"
+subjects = ["02"]
+
+[[parcellation.atlases]]
+name = "aal"
+path = "{atlas_path}"
+"""
+        )
+        argv = ["--config", str(config_file)]
     exit_code = run_cli(argv=argv)
     assert exit_code == 0
     summary = output_root / "reports" / "summary.txt"
