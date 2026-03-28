@@ -8,8 +8,8 @@ Examples:
     qsiparc /data/qsirecon /data/qsiparc-out
 
     # Single atlas, single subject
-    qsiparc /data/qsirecon /data/qsiparc-out \\
-        --atlas Schaefer2018N100Tian2020S2 \\
+    qsiparc /data/qsirecon /data/qsiparc-out \
+        --atlas Schaefer2018N100Tian2020S2 \
         --participant-label sub-001
 
     # Specific scalars only
@@ -24,12 +24,10 @@ from pathlib import Path
 
 import click
 
-from qsiparc.discover import discover_dseg_files, discover_scalar_maps
-from qsiparc.atlas import (
-    AtlasLUT,
-    load_lut_from_dseg,
-    load_lut_from_json,
-    load_lut_from_tsv,
+from qsiparc.discover import (
+    discover_dseg_files,
+    discover_scalar_maps,
+    load_lut_for_dseg,
 )
 from qsiparc.connectome import load_connectome, write_connectome
 from qsiparc.extract import extract_scalar_map, merge_extraction_results
@@ -47,39 +45,6 @@ def _setup_logging(verbosity: int) -> None:
         format="%(asctime)s [%(levelname)-7s] %(name)s | %(message)s",
         datefmt="%H:%M:%S",
     )
-
-
-def _find_lut(dseg_path: Path) -> AtlasLUT:
-    """Attempt to find and load an atlas LUT adjacent to a dseg file.
-
-    QSIRecon typically places label files alongside the dseg with the same
-    stem but a different extension (.tsv, .json, .txt).
-    """
-    stem = dseg_path.name.replace("_dseg.nii.gz", "")
-    parent = dseg_path.parent
-    atlas_name = ""
-    # Extract atlas name from filename
-    for part in stem.split("_"):
-        if part.startswith("seg-"):
-            atlas_name = part.replace("seg-", "")
-            break
-
-    # Try known LUT file patterns
-    for suffix, loader in [
-        ("_dseg.tsv", load_lut_from_tsv),
-        ("_labels.tsv", load_lut_from_tsv),
-        ("_dseg.json", load_lut_from_json),
-        ("_labels.json", load_lut_from_json),
-        ("_dseg.txt", load_lut_from_tsv),
-    ]:
-        candidate = parent / f"{stem}{suffix}"
-        if candidate.exists():
-            logger.info("Found LUT file: %s", candidate)
-            return loader(candidate, atlas_name=atlas_name)
-
-    # Fallback: extract labels from the dseg itself
-    logger.warning("No LUT file found for %s — falling back to dseg labels", dseg_path)
-    return load_lut_from_dseg(dseg_path, atlas_name=atlas_name)
 
 
 @click.command()
@@ -163,7 +128,10 @@ def main(
     if dry_run:
         click.echo(f"Found {len(dseg_files)} atlas parcellation(s):")
         for f in dseg_files:
-            click.echo(f"  {f.subject}/{f.session} atlas={f.atlas} → {f.path}")
+            click.echo(
+                f"  {f.subject}/{f.session} atlas={f.atlas_name}"
+                f"  lut={'yes' if f.lut_path else 'no'} → {f.path}"
+            )
         sys.exit(0)
 
     # Write dataset description
@@ -175,24 +143,23 @@ def main(
     for dseg_file in dseg_files:
         sub = dseg_file.subject
         ses = dseg_file.session
-        atlas_name = dseg_file.atlas
-        log_prefix = f"{sub}/{ses}/atlas-{atlas_name}"
+        atlas_name = dseg_file.atlas_name
+        log_prefix = f"sub-{sub}/ses-{ses}/atlas-{atlas_name}"
 
         try:
-            # Load atlas LUT
-            lut = _find_lut(dseg_file.path)
+            # Load atlas LUT from atlases/ dir (or fall back to dseg labels)
+            lut = load_lut_for_dseg(dseg_file)
 
             # --- Scalar extraction ---
             scalar_files = discover_scalar_maps(
                 qsirecon_dir,
-                subject=f"sub-{sub}",
-                session=f"ses-{ses}",
+                subject=sub,
+                session=ses,
                 scalars=list(scalars) if scalars else None,
             )
 
             results = []
             for sf in scalar_files:
-                # Derive scalar name from filename entities
                 scalar_name = sf.entities.get(
                     "param", sf.entities.get("desc", sf.path.stem.split("_")[-1])
                 )
@@ -219,9 +186,9 @@ def main(
                     atlas_name=atlas_name,
                 )
 
-            # --- Connectome passthrough ---
+            # --- Connectome extraction ---
             if not skip_connectomes:
-                ### TODO: Implemet connectome extraction
+                # TODO: implement tck2connectome calls
                 pass
 
             n_success += 1
@@ -233,7 +200,8 @@ def main(
 
     # Summary
     click.echo(
-        f"\nQSIParc complete: {n_success} succeeded, {n_fail} failed out of {len(dseg_files)} parcellations."
+        f"\nQSIParc complete: {n_success} succeeded, {n_fail} failed"
+        f" out of {len(dseg_files)} parcellations."
     )
 
     if n_fail > 0 and n_success == 0:

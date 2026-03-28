@@ -6,6 +6,7 @@ extraction results can be verified deterministically.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import nibabel as nib
@@ -76,57 +77,90 @@ def synthetic_scalar_gradient() -> nib.Nifti1Image:
 
 @pytest.fixture
 def bids_tree(tmp_path: Path) -> dict[str, Path]:
-    """Create a minimal BIDS-like QSIRecon derivatives tree on disk.
+    """Create a minimal QSIRecon derivatives tree matching the real layout.
 
-    Returns a dict with keys: 'root', 'dseg', 'scalar_fa', 'scalar_md', 'connectome'.
+    Tree structure::
+
+        qsirecon/
+          atlases/
+            atlas-TestAtlas5/
+              atlas-TestAtlas5_dseg.tsv      # index + label columns
+          sub-001/ses-01/dwi/
+            sub-001_ses-01_space-T1w_seg-TestAtlas5_dseg.nii.gz
+          derivatives/
+            qsirecon-DTI/sub-001/ses-01/dwi/
+              sub-001_ses-01_space-T1w_model-DTI_param-FA_dwimap.nii.gz
+              sub-001_ses-01_space-T1w_model-DTI_param-MD_dwimap.nii.gz
+            qsirecon-MRtrix3/sub-001/ses-01/dwi/
+              sub-001_ses-01_space-T1w_model-ifod2_streamlines.tck.gz
+              sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv
+
+    Returns a dict with keys:
+        root, dseg, scalar_fa, scalar_md, lut, tck, sift_weights, connectome
     """
     root = tmp_path / "qsirecon"
-    dwi_dir = root / "sub-001" / "ses-01" / "dwi"
-    dwi_dir.mkdir(parents=True)
-
     affine = np.eye(4)
     shape = (10, 10, 10)
 
-    # dseg
+    # --- Atlas LUT in atlases/ directory (real QSIRecon layout) ---
+    atlas_dir = root / "atlases" / "atlas-TestAtlas5"
+    atlas_dir.mkdir(parents=True)
+    lut_path = atlas_dir / "atlas-TestAtlas5_dseg.tsv"
+    # Real QSIRecon TSVs use "index" and "label" columns (no explicit hemi/structure)
+    lut_path.write_text(
+        "index\tlabel\n"
+        "1\tLH_Vis_1\n"
+        "2\tRH_Vis_1\n"
+        "3\tLH_Default_1\n"
+        "4\tThalamus_L\n"
+        "5\tCerebellum_R\n"
+    )
+
+    # --- Subject-space dseg (uses seg- entity, not atlas-) ---
+    dwi_dir = root / "sub-001" / "ses-01" / "dwi"
+    dwi_dir.mkdir(parents=True)
     dseg_data = np.zeros(shape, dtype=np.int32)
     for i, z in enumerate([0, 2, 4, 6, 8], start=1):
         dseg_data[0, :, z] = i
         dseg_data[0, :, z + 1] = i
-    dseg_path = dwi_dir / "sub-001_ses-01_space-T1w_atlas-TestAtlas5_dseg.nii.gz"
+    dseg_path = dwi_dir / "sub-001_ses-01_space-T1w_seg-TestAtlas5_dseg.nii.gz"
     nib.save(nib.Nifti1Image(dseg_data, affine), dseg_path)
 
-    # FA scalar
+    # --- Scalar maps in derivatives/qsirecon-DTI/ ---
+    dti_dwi = root / "derivatives" / "qsirecon-DTI" / "sub-001" / "ses-01" / "dwi"
+    dti_dwi.mkdir(parents=True)
+
     fa_data = np.random.default_rng(42).uniform(0.1, 0.9, shape).astype(np.float64)
-    fa_path = dwi_dir / "sub-001_ses-01_space-T1w_model-DTI_param-FA.nii.gz"
+    fa_path = dti_dwi / "sub-001_ses-01_space-T1w_model-DTI_param-FA_dwimap.nii.gz"
     nib.save(nib.Nifti1Image(fa_data, affine), fa_path)
 
-    # MD scalar
     md_data = np.random.default_rng(43).uniform(0.0005, 0.002, shape).astype(np.float64)
-    md_path = dwi_dir / "sub-001_ses-01_space-T1w_model-DTI_param-MD.nii.gz"
+    md_path = dti_dwi / "sub-001_ses-01_space-T1w_model-DTI_param-MD_dwimap.nii.gz"
     nib.save(nib.Nifti1Image(md_data, affine), md_path)
 
-    # Connectivity matrix (5×5)
-    conn_data = np.random.default_rng(44).integers(0, 100, (5, 5)).astype(float)
-    conn_data = (conn_data + conn_data.T) / 2  # symmetrize
-    conn_path = dwi_dir / "sub-001_ses-01_algo-CSD_atlas-TestAtlas5_connectivity.csv"
-    np.savetxt(conn_path, conn_data, delimiter=",", fmt="%.1f")
+    # --- Tractography + SIFT2 weights in derivatives/qsirecon-MRtrix3/ ---
+    mrtrix_dwi = root / "derivatives" / "qsirecon-MRtrix3" / "sub-001" / "ses-01" / "dwi"
+    mrtrix_dwi.mkdir(parents=True)
 
-    # LUT file
-    lut_path = dwi_dir / "sub-001_ses-01_space-T1w_atlas-TestAtlas5_dseg.tsv"
-    lut_path.write_text(
-        "index\tname\themisphere\tstructure\n"
-        "1\tLH_Vis_1\tL\tcortex\n"
-        "2\tRH_Vis_1\tR\tcortex\n"
-        "3\tLH_Default_1\tL\tcortex\n"
-        "4\tThalamus_L\tL\tsubcortex\n"
-        "5\tCerebellum_R\tR\tcerebellum\n"
-    )
+    tck_path = mrtrix_dwi / "sub-001_ses-01_space-T1w_model-ifod2_streamlines.tck.gz"
+    tck_path.write_bytes(b"")  # placeholder — content not needed for discovery tests
+
+    sift_path = mrtrix_dwi / "sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv"
+    np.savetxt(sift_path, np.ones(10), delimiter=",", fmt="%.6f")
+
+    # --- Connectivity matrix (used directly by integration tests) ---
+    conn_data = np.random.default_rng(44).integers(0, 100, (5, 5)).astype(float)
+    conn_data = (conn_data + conn_data.T) / 2
+    conn_path = dti_dwi / "sub-001_ses-01_space-T1w_seg-TestAtlas5_connectivity.csv"
+    np.savetxt(conn_path, conn_data, delimiter=",", fmt="%.1f")
 
     return {
         "root": root,
         "dseg": dseg_path,
         "scalar_fa": fa_path,
         "scalar_md": md_path,
-        "connectome": conn_path,
         "lut": lut_path,
+        "tck": tck_path,
+        "sift_weights": sift_path,
+        "connectome": conn_path,
     }

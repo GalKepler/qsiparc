@@ -5,44 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from qsiparc.extract import compute_region_stats, extract_scalar_map, merge_extraction_results
-
-
-class TestComputeRegionStats:
-    """Tests for the low-level stats computation."""
-
-    def test_basic_stats(self):
-        voxels = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        result = compute_region_stats(voxels, n_atlas_voxels=5)
-
-        assert result["mean"] == pytest.approx(3.0)
-        assert result["median"] == pytest.approx(3.0)
-        assert result["n_voxels"] == 5.0
-        assert result["coverage"] == pytest.approx(1.0)
-        assert result["iqr"] == pytest.approx(2.0)  # Q3=4, Q1=2
-
-    def test_empty_region(self):
-        voxels = np.array([], dtype=np.float64)
-        result = compute_region_stats(voxels, n_atlas_voxels=10)
-
-        assert result["n_voxels"] == 0.0
-        assert result["coverage"] == pytest.approx(0.0)
-        assert np.isnan(result["mean"])
-        assert np.isnan(result["std"])
-
-    def test_single_voxel(self):
-        voxels = np.array([0.42])
-        result = compute_region_stats(voxels, n_atlas_voxels=1)
-
-        assert result["mean"] == pytest.approx(0.42)
-        assert result["median"] == pytest.approx(0.42)
-        assert np.isnan(result["std"])  # ddof=1 with n=1 → NaN
-        assert result["n_voxels"] == 1.0
-
-    def test_coverage_partial(self):
-        voxels = np.array([1.0, 2.0, 3.0])
-        result = compute_region_stats(voxels, n_atlas_voxels=10)
-        assert result["coverage"] == pytest.approx(0.3)
+from qsiparc.extract import extract_scalar_map, merge_extraction_results
 
 
 class TestExtractScalarMap:

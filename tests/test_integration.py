@@ -9,9 +9,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from qsiparc.atlas import load_lut_from_tsv
 from qsiparc.connectome import load_connectome, write_connectome
-from qsiparc.discover import BIDSFile, discover_connectomes, discover_dseg_files, discover_scalar_maps
+from qsiparc.discover import BIDSFile, discover_dseg_files, discover_scalar_maps, load_lut_for_dseg
 from qsiparc.extract import extract_scalar_map, merge_extraction_results
 from qsiparc.output import write_dataset_description, write_diffmap_tsv
 
@@ -27,12 +26,18 @@ class TestFullPipeline:
         dsegs = discover_dseg_files(qsirecon_dir)
         assert len(dsegs) == 1
         dseg = dsegs[0]
+        assert dseg.atlas_name == "TestAtlas5"
+        assert dseg.lut_path is not None
 
-        # 2. Load LUT
-        lut = load_lut_from_tsv(bids_tree["lut"], atlas_name="TestAtlas5")
+        # 2. Load LUT from atlases/ directory
+        lut = load_lut_for_dseg(dseg)
+        assert len(lut) == 5
+        assert lut[1].name == "LH_Vis_1"
 
         # 3. Discover and extract scalars
         scalar_files = discover_scalar_maps(qsirecon_dir, "sub-001", "ses-01")
+        assert len(scalar_files) == 2
+
         results = []
         for sf in scalar_files:
             scalar_name = sf.entities.get("param", "unknown")
@@ -50,36 +55,30 @@ class TestFullPipeline:
         combined = merge_extraction_results(results)
         tsv_path = write_diffmap_tsv(combined, output_dir, "sub-001", "ses-01", "TestAtlas5")
 
-        # Verify output structure
         assert tsv_path.exists()
         assert "atlas-TestAtlas5" in str(tsv_path)
         assert tsv_path.suffix == ".tsv"
 
-        # Verify content
         df = pd.read_csv(tsv_path, sep="\t")
         assert len(df) == 10  # 5 regions × 2 scalars
         assert "region_name" in df.columns
         assert "mean" in df.columns
         assert "coverage" in df.columns
 
-        # 5. Connectome passthrough
-        conn_files = discover_connectomes(qsirecon_dir, "sub-001", "ses-01")
-        assert len(conn_files) == 1
-
-        conn = load_connectome(conn_files[0], lut=lut)
+        # 5. Connectome passthrough (load from known path, no discovery needed)
+        conn_file = BIDSFile(path=bids_tree["connectome"], entities={})
+        conn = load_connectome(conn_file, lut=lut)
         csv_path, json_path = write_connectome(conn, output_dir, "sub-001", "ses-01")
 
         assert csv_path.exists()
         assert json_path.exists()
 
-        # Verify connectome sidecar
         with open(json_path) as f:
             sidecar = json.load(f)
         assert sidecar["n_regions"] == 5
         assert sidecar["symmetric"] is True
         assert len(sidecar["region_labels"]) == 5
 
-        # Verify matrix is loadable and correct shape
         matrix = np.loadtxt(csv_path, delimiter=",")
         assert matrix.shape == (5, 5)
 

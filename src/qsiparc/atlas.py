@@ -25,7 +25,6 @@ class RegionInfo:
     index: int
     name: str
     hemisphere: str  # "L", "R", or "bilateral"
-    structure: str  # "cortex", "subcortex", "cerebellum", "brainstem", "unknown"
 
 
 class AtlasLUT:
@@ -66,7 +65,6 @@ class AtlasLUT:
                     "region_index": r.index,
                     "region_name": r.name,
                     "hemisphere": r.hemisphere,
-                    "structure": r.structure,
                 }
                 for r in self.regions
             ]
@@ -99,52 +97,10 @@ def infer_hemisphere(name: str) -> str:
     return "bilateral"
 
 
-def infer_structure(name: str, index: int = 0) -> str:
-    """Guess anatomical structure from a region name.
-
-    Uses keyword heuristics. This is intentionally conservative —
-    unknown regions are labeled "unknown" rather than guessed.
-    """
-    lower = name.lower()
-    subcortical_keywords = {
-        "thal",
-        "caudate",
-        "putamen",
-        "pallidum",
-        "hippocampus",
-        "amygdala",
-        "accumbens",
-        "nac",
-        "ventraldc",
-        "basalforebrain",
-        "hypothalamus",
-    }
-    cerebellar_keywords = {"cerebellum", "cerebellar", "vermis", "crus"}
-    brainstem_keywords = {"brainstem", "pons", "medulla", "midbrain"}
-
-    for kw in brainstem_keywords:
-        if kw in lower:
-            return "brainstem"
-    for kw in cerebellar_keywords:
-        if kw in lower:
-            return "cerebellum"
-    for kw in subcortical_keywords:
-        if kw in lower:
-            return "subcortex"
-    # Default assumption for numbered parcellation schemes (Schaefer, HCP, etc.)
-    # is cortex, but we're conservative for truly unrecognizable names.
-    if any(
-        kw in lower
-        for kw in ("network", "vis", "som", "dors", "vent", "limb", "cont", "default")
-    ):
-        return "cortex"
-    return "unknown"
-
-
 def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
     """Load a TSV LUT file (common QSIRecon format).
 
-    Expected columns: index, name (minimum). Optional: hemisphere, structure.
+    Expected columns: index, name (minimum). Optional: hemisphere.
     Also handles FreeSurfer-style LUT format (index name R G B A).
 
     Parameters
@@ -160,22 +116,22 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
     """
     # Try pandas first for well-formed TSVs
     try:
-        df = pd.read_csv(path, sep=r"\t", engine="python", header=None)
+        df = pd.read_csv(path, sep=r"\t", engine="python")
     except Exception:
         # Fall back to manual parsing for FreeSurfer-style LUTs
         return _parse_freesurfer_lut(path, atlas_name)
 
-    print(df)
     # Normalize column names
-    df.columns = [c.lower().strip() for c in df.columns]
+    df.columns = [str(c).lower().strip() for c in df.columns]
 
-    # Identify index and name columns
+    # Identify index and name columns.
+    # "label" is a name candidate (QSIRecon atlas TSVs use index + label columns).
     idx_col = next(
-        (c for c in df.columns if c in ("index", "label", "id", "region_id")),
+        (c for c in df.columns if c in ("index", "id", "region_id")),
         df.columns[0],
     )
     name_col = next(
-        (c for c in df.columns if c in ("name", "region", "label_name", "region_name")),
+        (c for c in df.columns if c in ("name", "label", "region", "label_name", "region_name")),
         df.columns[1],
     )
 
@@ -186,9 +142,8 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
             continue  # Skip background
         name = str(row[name_col])
         hemisphere = row.get("hemisphere", infer_hemisphere(name))
-        structure = row.get("structure", infer_structure(name, idx))
         regions.append(
-            RegionInfo(index=idx, name=name, hemisphere=hemisphere, structure=structure)
+            RegionInfo(index=idx, name=name, hemisphere=hemisphere)
         )
 
     logger.info("Loaded %d regions from TSV LUT: %s", len(regions), path)
@@ -214,9 +169,7 @@ def load_lut_from_json(path: Path, atlas_name: str = "") -> AtlasLUT:
                 RegionInfo(
                     index=idx,
                     name=name,
-                    hemisphere=infer_hemisphere(name),
-                    structure=infer_structure(name, idx),
-                )
+                    hemisphere=infer_hemisphere(name),                )
             )
     elif isinstance(data, list):
         for entry in data:
@@ -229,7 +182,6 @@ def load_lut_from_json(path: Path, atlas_name: str = "") -> AtlasLUT:
                     index=idx,
                     name=name,
                     hemisphere=entry.get("hemisphere", infer_hemisphere(name)),
-                    structure=entry.get("structure", infer_structure(name, idx)),
                 )
             )
 
@@ -254,7 +206,6 @@ def load_lut_from_dseg(dseg_path: Path, atlas_name: str = "") -> AtlasLUT:
             index=int(idx),
             name=f"region_{idx:04d}",
             hemisphere="bilateral",
-            structure="unknown",
         )
         for idx in unique_labels
     ]
@@ -289,7 +240,6 @@ def _parse_freesurfer_lut(path: Path, atlas_name: str) -> AtlasLUT:
                     index=idx,
                     name=name,
                     hemisphere=infer_hemisphere(name),
-                    structure=infer_structure(name, idx),
                 )
             )
     logger.info("Loaded %d regions from FreeSurfer LUT: %s", len(regions), path)
