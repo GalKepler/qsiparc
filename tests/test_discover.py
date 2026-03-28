@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from qsiparc.atlas import AtlasLUT, infer_hemisphere, infer_structure, load_lut_from_tsv
+from qsiparc.atlas import AtlasLUT, infer_hemisphere, load_lut_from_tsv
 from qsiparc.discover import (
     AtlasDsegFile,
     discover_dseg_files,
@@ -46,45 +46,29 @@ class TestInferHemisphere:
         assert infer_hemisphere(name) == expected
 
 
-class TestInferStructure:
-    @pytest.mark.parametrize(
-        "name,expected",
-        [
-            ("Thalamus_L", "subcortex"),
-            ("Caudate_R", "subcortex"),
-            ("Cerebellum_Crus_I_L", "cerebellum"),
-            ("Brainstem", "brainstem"),
-            ("7Networks_LH_Vis_1", "cortex"),
-        ],
-    )
-    def test_cases(self, name, expected):
-        assert infer_structure(name) == expected
-
-
 class TestLoadLutFromTsv:
     def test_load_with_label_column(self, bids_tree):
         """Real QSIRecon TSVs have 'index' and 'label' columns."""
         lut = load_lut_from_tsv(bids_tree["lut"], atlas_name="TestAtlas5")
         assert len(lut) == 5
         assert lut[1].name == "LH_Vis_1"
-        assert lut[4].structure == "subcortex"  # inferred from "Thalamus_L"
+        assert lut[4].hemisphere == "L"  # inferred from "Thalamus_L"
 
     def test_load_with_name_column(self, tmp_path):
-        """TSVs with explicit 'name', 'hemisphere', 'structure' columns also work."""
+        """TSVs with explicit 'name', 'hemisphere' columns also work."""
         tsv = tmp_path / "lut.tsv"
         tsv.write_text(
-            "index\tname\themisphere\tstructure\n"
-            "1\tLH_Vis_1\tL\tcortex\n"
-            "4\tThalamus_L\tL\tsubcortex\n"
+            "index\tname\themisphere\n"
+            "1\tLH_Vis_1\tL\n"
+            "4\tThalamus_L\tL\n"
         )
         lut = load_lut_from_tsv(tsv, atlas_name="X")
         assert lut[1].hemisphere == "L"
-        assert lut[4].structure == "subcortex"
 
     def test_to_dataframe(self, bids_tree):
         lut = load_lut_from_tsv(bids_tree["lut"], atlas_name="TestAtlas5")
         df = lut.to_dataframe()
-        assert list(df.columns) == ["region_index", "region_name", "hemisphere", "structure"]
+        assert list(df.columns) == ["region_index", "region_name", "hemisphere"]
         assert len(df) == 5
 
 
@@ -170,6 +154,11 @@ class TestDiscoverScalarMaps:
         files = discover_scalar_maps(bids_tree["root"], "sub-001", "ses-01", scalars=["FA"])
         assert files[0].entities.get("param") == "FA"
         assert files[0].entities.get("model") == "DTI"
+
+    def test_mni_space_excluded(self, bids_tree):
+        files = discover_scalar_maps(bids_tree["root"], "sub-001", "ses-01")
+        spaces = {f.entities.get("space") for f in files}
+        assert spaces == {"ACPC"}
 
     def test_no_derivatives_returns_empty(self, tmp_path):
         root = tmp_path / "empty_root"

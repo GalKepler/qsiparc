@@ -21,11 +21,11 @@ def five_region_lut() -> AtlasLUT:
     """An atlas LUT with 5 regions: 3 cortical, 1 subcortical, 1 cerebellar."""
     return AtlasLUT(
         regions=[
-            RegionInfo(index=1, name="LH_Vis_1", hemisphere="L", structure="cortex"),
-            RegionInfo(index=2, name="RH_Vis_1", hemisphere="R", structure="cortex"),
-            RegionInfo(index=3, name="LH_Default_1", hemisphere="L", structure="cortex"),
-            RegionInfo(index=4, name="Thalamus_L", hemisphere="L", structure="subcortex"),
-            RegionInfo(index=5, name="Cerebellum_R", hemisphere="R", structure="cerebellum"),
+            RegionInfo(index=1, name="LH_Vis_1", hemisphere="L"),
+            RegionInfo(index=2, name="RH_Vis_1", hemisphere="R"),
+            RegionInfo(index=3, name="LH_Default_1", hemisphere="L"),
+            RegionInfo(index=4, name="Thalamus_L", hemisphere="L"),
+            RegionInfo(index=5, name="Cerebellum_R", hemisphere="R"),
         ],
         atlas_name="TestAtlas5",
     )
@@ -89,8 +89,9 @@ def bids_tree(tmp_path: Path) -> dict[str, Path]:
             sub-001_ses-01_space-T1w_seg-TestAtlas5_dseg.nii.gz
           derivatives/
             qsirecon-DTI/sub-001/ses-01/dwi/
-              sub-001_ses-01_space-T1w_model-DTI_param-FA_dwimap.nii.gz
-              sub-001_ses-01_space-T1w_model-DTI_param-MD_dwimap.nii.gz
+              sub-001_ses-01_space-ACPC_model-DTI_param-FA_dwimap.nii.gz
+              sub-001_ses-01_space-ACPC_model-DTI_param-MD_dwimap.nii.gz
+              sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz  # excluded
             qsirecon-MRtrix3/sub-001/ses-01/dwi/
               sub-001_ses-01_space-T1w_model-ifod2_streamlines.tck.gz
               sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv
@@ -131,12 +132,17 @@ def bids_tree(tmp_path: Path) -> dict[str, Path]:
     dti_dwi.mkdir(parents=True)
 
     fa_data = np.random.default_rng(42).uniform(0.1, 0.9, shape).astype(np.float64)
-    fa_path = dti_dwi / "sub-001_ses-01_space-T1w_model-DTI_param-FA_dwimap.nii.gz"
+    fa_path = dti_dwi / "sub-001_ses-01_space-ACPC_model-DTI_param-FA_dwimap.nii.gz"
     nib.save(nib.Nifti1Image(fa_data, affine), fa_path)
 
     md_data = np.random.default_rng(43).uniform(0.0005, 0.002, shape).astype(np.float64)
-    md_path = dti_dwi / "sub-001_ses-01_space-T1w_model-DTI_param-MD_dwimap.nii.gz"
+    md_path = dti_dwi / "sub-001_ses-01_space-ACPC_model-DTI_param-MD_dwimap.nii.gz"
     nib.save(nib.Nifti1Image(md_data, affine), md_path)
+
+    # MNI-space map — should be excluded by discover_scalar_maps
+    mni_fa_data = np.random.default_rng(99).uniform(0.1, 0.9, shape).astype(np.float64)
+    mni_fa_path = dti_dwi / "sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz"
+    nib.save(nib.Nifti1Image(mni_fa_data, affine), mni_fa_path)
 
     # --- Tractography + SIFT2 weights in derivatives/qsirecon-MRtrix3/ ---
     mrtrix_dwi = root / "derivatives" / "qsirecon-MRtrix3" / "sub-001" / "ses-01" / "dwi"

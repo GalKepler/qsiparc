@@ -65,7 +65,6 @@ Each row = one region × one scalar map:
 | `region_index`    | Integer label from the atlas dseg                  |
 | `region_name`     | Human-readable name (from atlas LUT)               |
 | `hemisphere`      | `L`, `R`, or `bilateral`                           |
-| `structure`       | `cortex`, `subcortex`, `cerebellum`, `brainstem`   |
 | `scalar`          | Name of the diffusion scalar (e.g. `FA`, `ICVF`)  |
 | `mean`            | Arithmetic mean across voxels                      |
 | `median`          | Median across voxels                               |

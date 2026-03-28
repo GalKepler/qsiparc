@@ -49,7 +49,7 @@ qsiparc-out/
 
 Each row is one region × one scalar:
 
-| region_index | region_name | hemisphere | structure | scalar | mean | median | std | iqr | skewness | kurtosis | n_voxels | coverage |
+| region_index | region_name | hemisphere | scalar | mean | median | std | iqr | skewness | kurtosis | n_voxels | coverage |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 1 | LH_Vis_1 | L | cortex | FA | 0.42 | 0.41 | 0.08 | 0.11 | 0.15 | -0.32 | 847 | 0.98 |
 

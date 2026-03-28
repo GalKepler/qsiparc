@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from qsiparc.connectome import load_connectome, write_connectome
+from qsiparc.connectome import MEASURES, build_connectomes
 from qsiparc.discover import BIDSFile, discover_dseg_files, discover_scalar_maps, load_lut_for_dseg
 from qsiparc.extract import extract_scalar_map, merge_extraction_results
 from qsiparc.output import write_dataset_description, write_diffmap_tsv
@@ -61,26 +62,40 @@ class TestFullPipeline:
 
         df = pd.read_csv(tsv_path, sep="\t")
         assert len(df) == 10  # 5 regions × 2 scalars
-        assert "region_name" in df.columns
         assert "mean" in df.columns
-        assert "coverage" in df.columns
+        assert "scalar" in df.columns
 
-        # 5. Connectome passthrough (load from known path, no discovery needed)
-        conn_file = BIDSFile(path=bids_tree["connectome"], entities={})
-        conn = load_connectome(conn_file, lut=lut)
-        csv_path, json_path = write_connectome(conn, output_dir, "sub-001", "ses-01")
+        # 5. Connectome construction via tck2connectome (subprocess mocked)
+        from qsiparc.discover import discover_tractography, parse_entities
+        tck_files = discover_tractography(qsirecon_dir, "sub-001", "ses-01")
+        assert len(tck_files) == 1
 
-        assert csv_path.exists()
-        assert json_path.exists()
+        def fake_run(cmd, **kwargs):
+            out_csv = Path(cmd[3])
+            np.savetxt(out_csv, np.eye(5), delimiter=",", fmt="%.1f")
+            mock = MagicMock()
+            mock.returncode = 0
+            return mock
 
-        with open(json_path) as f:
-            sidecar = json.load(f)
-        assert sidecar["n_regions"] == 5
-        assert sidecar["symmetric"] is True
-        assert len(sidecar["region_labels"]) == 5
+        with patch("qsiparc.connectome.subprocess.run", side_effect=fake_run):
+            conn_results = build_connectomes(
+                tck_file=tck_files[0],
+                dseg_file=dseg,
+                lut=lut,
+                output_dir=output_dir,
+                subject="sub-001",
+                session="ses-01",
+            )
 
-        matrix = np.loadtxt(csv_path, delimiter=",")
-        assert matrix.shape == (5, 5)
+        assert len(conn_results) == 4  # all four measures
+        for result in conn_results:
+            assert result.csv_path.exists()
+            assert result.json_path.exists()
+            sidecar = json.loads(result.json_path.read_text())
+            assert sidecar["n_regions"] == 5
+            assert sidecar["symmetric"] is True
+            assert len(sidecar["region_labels"]) == 5
+            assert result.matrix.shape == (5, 5)
 
         # 6. Dataset description
         desc_path = write_dataset_description(output_dir)

@@ -131,7 +131,10 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
         df.columns[0],
     )
     name_col = next(
-        (c for c in df.columns if c in ("name", "label", "region", "label_name", "region_name")),
+        (
+            c for c in df.columns
+            if c in ("name", "label", "region", "label_name", "region_name")
+        ),
         df.columns[1],
     )
 
@@ -142,9 +145,7 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
             continue  # Skip background
         name = str(row[name_col])
         hemisphere = row.get("hemisphere", infer_hemisphere(name))
-        regions.append(
-            RegionInfo(index=idx, name=name, hemisphere=hemisphere)
-        )
+        regions.append(RegionInfo(index=idx, name=name, hemisphere=hemisphere))
 
     logger.info("Loaded %d regions from TSV LUT: %s", len(regions), path)
     return AtlasLUT(regions=regions, atlas_name=atlas_name)
@@ -166,10 +167,7 @@ def load_lut_from_json(path: Path, atlas_name: str = "") -> AtlasLUT:
             if idx == 0:
                 continue
             regions.append(
-                RegionInfo(
-                    index=idx,
-                    name=name,
-                    hemisphere=infer_hemisphere(name),                )
+                RegionInfo(index=idx, name=name, hemisphere=infer_hemisphere(name))
             )
     elif isinstance(data, list):
         for entry in data:
@@ -202,11 +200,7 @@ def load_lut_from_dseg(dseg_path: Path, atlas_name: str = "") -> AtlasLUT:
     unique_labels = sorted(set(data.ravel()) - {0})
 
     regions = [
-        RegionInfo(
-            index=int(idx),
-            name=f"region_{idx:04d}",
-            hemisphere="bilateral",
-        )
+        RegionInfo(index=int(idx), name=f"region_{idx:04d}", hemisphere="bilateral")
         for idx in unique_labels
     ]
     logger.warning(
@@ -236,11 +230,7 @@ def _parse_freesurfer_lut(path: Path, atlas_name: str) -> AtlasLUT:
                 continue
             name = parts[1]
             regions.append(
-                RegionInfo(
-                    index=idx,
-                    name=name,
-                    hemisphere=infer_hemisphere(name),
-                )
+                RegionInfo(index=idx, name=name, hemisphere=infer_hemisphere(name))
             )
     logger.info("Loaded %d regions from FreeSurfer LUT: %s", len(regions), path)
     return AtlasLUT(regions=regions, atlas_name=atlas_name)

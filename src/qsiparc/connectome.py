@@ -1,176 +1,325 @@
-"""Connectome passthrough: read, validate, and repackage QSIRecon connectivity matrices.
+"""Connectome construction: run tck2connectome for four connectivity measures.
 
-QSIRecon already computes structural connectivity matrices from tractography.
-QSIParc does not recompute them — it reads the CSV outputs, validates them,
-and writes them to the BIDS-derivative output layout with JSON sidecar metadata.
+QSIRecon produces tractography (.tck) and SIFT2 streamline weights, but does
+NOT run tck2connectome — that step is QSIParc's responsibility.
+
+For each tractogram × atlas combination, QSIParc runs four tck2connectome
+variants and writes a CSV matrix + JSON sidecar for each.
 """
 
 from __future__ import annotations
 
+import contextlib
+import gzip
 import json
 import logging
+import shutil
+import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
 from qsiparc.atlas import AtlasLUT
-from qsiparc.discover import BIDSFile, parse_entities
+from qsiparc.discover import AtlasDsegFile, BIDSFile
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class ConnectomeResult:
-    """A validated connectivity matrix with metadata."""
+# ---------------------------------------------------------------------------
+# Measure definitions: maps each measure name to its tck2connectome flags
+# and whether SIFT2 streamline weights are required.
+# ---------------------------------------------------------------------------
 
-    matrix: np.ndarray  # shape (N, N)
-    atlas_name: str
-    edge_weight: str  # "streamline_count", "mean_length", "sift2", "fa_weighted", etc.
-    region_labels: list[str]
-    source_file: Path
-    entities: dict[str, str]
+MEASURES: dict[str, dict] = {
+    "sift_invnodevol_radius2_count": {
+        "flags": [
+            "-assignment_radial_search", "2",
+            "-scale_invnodevol",
+            "-symmetric",
+            "-stat_edge", "sum",
+        ],
+        "needs_sift_weights": True,
+    },
+    "radius2_meanlength": {
+        "flags": [
+            "-assignment_radial_search", "2",
+            "-scale_length",
+            "-symmetric",
+            "-stat_edge", "mean",
+        ],
+        "needs_sift_weights": False,
+    },
+    "radius2_count": {
+        "flags": [
+            "-assignment_radial_search", "2",
+            "-symmetric",
+            "-stat_edge", "sum",
+        ],
+        "needs_sift_weights": False,
+    },
+    "sift_radius2_count": {
+        "flags": [
+            "-assignment_radial_search", "2",
+            "-symmetric",
+            "-stat_edge", "sum",
+        ],
+        "needs_sift_weights": True,
+    },
+}
 
 
-def infer_edge_weight(bids_file: BIDSFile) -> str:
-    """Infer the edge weight type from the filename entities.
+def check_mrtrix3() -> bool:
+    """Return True if tck2connectome is reachable on PATH."""
+    return shutil.which("tck2connectome") is not None
 
-    QSIRecon encodes this in various ways depending on the reconstruction spec.
-    Common patterns:
-        *_algo-CSD_atlas-*_connectivity.csv → streamline_count
-        *_algo-CSD_atlas-*_desc-sift2_connectivity.csv → sift2_weighted
-        *_algo-CSD_atlas-*_desc-meanlength_connectivity.csv → mean_length
+
+@contextlib.contextmanager
+def _ensure_plain_tck(tck_path: Path):
+    """Yield a plain .tck path, decompressing .tck.gz to a temp file if needed.
+
+    MRtrix3's tck2connectome does not accept gzip-compressed tractograms.
+    When *tck_path* ends with ``.tck.gz``, this context manager decompresses
+    it to a temporary ``.tck`` file, yields that path, then deletes the
+    temporary file on exit.  Plain ``.tck`` files are yielded unchanged.
     """
-    entities = bids_file.entities
-    desc = entities.get("desc", "").lower()
-    measure = entities.get("measure", "").lower()
-
-    if "sift2" in desc or "sift2" in measure:
-        return "sift2_weighted"
-    if "meanlength" in desc or "length" in measure:
-        return "mean_length"
-    if "fa" in desc:
-        return "fa_weighted"
-    if "md" in desc:
-        return "md_weighted"
-    # Default for undecorated connectivity files
-    return "streamline_count"
+    if tck_path.suffix == ".gz" and tck_path.stem.endswith(".tck"):
+        tmp = tempfile.NamedTemporaryFile(suffix=".tck", delete=False)
+        tmp_path = Path(tmp.name)
+        try:
+            logger.debug("Decompressing %s → %s", tck_path.name, tmp_path.name)
+            with gzip.open(tck_path, "rb") as src, open(tmp_path, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+            yield tmp_path
+        finally:
+            tmp_path.unlink(missing_ok=True)
+    else:
+        yield tck_path
 
 
-def load_connectome(
-    bids_file: BIDSFile,
-    lut: AtlasLUT | None = None,
-) -> ConnectomeResult:
-    """Load and validate a QSIRecon connectivity CSV.
+def find_sift_weights_for_tck(tck_path: Path) -> Path | None:
+    """Find SIFT2 streamline weight file adjacent to a tractography file.
+
+    Searches the same directory as *tck_path* for files matching:
+        ``*_streamlineweights.csv``
+        ``*_siftweights.csv``
+
+    Returns the first match, or None if nothing is found.
+    """
+    parent = tck_path.parent
+    for pattern in ("*_streamlineweights.csv", "*_siftweights.csv"):
+        candidates = sorted(parent.glob(pattern))
+        if candidates:
+            return candidates[0]
+    return None
+
+
+def build_tck2connectome_cmd(
+    tck_path: Path,
+    dseg_path: Path,
+    out_csv: Path,
+    measure: str,
+    sift_weights: Path | None = None,
+) -> list[str]:
+    """Assemble the tck2connectome command for a given measure.
 
     Parameters
     ----------
-    bids_file : BIDSFile
-        Discovered connectome file.
-    lut : AtlasLUT, optional
-        If provided, validates matrix dimensions against the atlas.
+    tck_path : Path
+        Input tractogram (.tck or .tck.gz).
+    dseg_path : Path
+        Atlas parcellation in subject diffusion space (node image).
+    out_csv : Path
+        Destination CSV for the N×N matrix.
+    measure : str
+        One of the keys in MEASURES.
+    sift_weights : Path, optional
+        SIFT2 weight file; required when MEASURES[measure]["needs_sift_weights"]
+        is True.
 
     Returns
     -------
-    ConnectomeResult
+    list[str]
+        Full argv list starting with ``"tck2connectome"``.
 
     Raises
     ------
     ValueError
-        If the matrix is not square or doesn't match the atlas.
+        If *measure* is unknown or SIFT2 weights are required but not provided.
     """
-    path = bids_file.path
-
-    # QSIRecon outputs vary: some have headers, some don't. Try both.
-    try:
-        matrix = np.loadtxt(path, delimiter=",")
-    except ValueError:
-        # Retry skipping first row (header)
-        matrix = np.loadtxt(path, delimiter=",", skiprows=1)
-
-    if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
+    if measure not in MEASURES:
         raise ValueError(
-            f"Connectivity matrix is not square: shape {matrix.shape} in {path}"
+            f"Unknown measure: {measure!r}. Valid measures: {list(MEASURES)}"
         )
 
-    n_regions = matrix.shape[0]
-
-    if lut is not None and len(lut) != n_regions:
+    spec = MEASURES[measure]
+    if spec["needs_sift_weights"] and sift_weights is None:
         raise ValueError(
-            f"Matrix has {n_regions} regions but atlas LUT has {len(lut)} regions. "
-            f"File: {path}, Atlas: {lut.atlas_name}"
+            f"Measure {measure!r} requires SIFT2 weights but none were provided."
         )
 
-    region_labels = [r.name for r in lut.regions] if lut else [f"region_{i+1}" for i in range(n_regions)]
-    edge_weight = infer_edge_weight(bids_file)
+    cmd: list[str] = [
+        "tck2connectome",
+        str(tck_path),
+        str(dseg_path),
+        str(out_csv),
+    ]
+    cmd.extend(spec["flags"])
+    if spec["needs_sift_weights"] and sift_weights is not None:
+        cmd.extend(["-tck_weights_in", str(sift_weights)])
 
-    logger.info(
-        "Loaded %dx%d connectome (edge_weight=%s) from %s",
-        n_regions,
-        n_regions,
-        edge_weight,
-        path,
-    )
-
-    return ConnectomeResult(
-        matrix=matrix,
-        atlas_name=bids_file.atlas,
-        edge_weight=edge_weight,
-        region_labels=region_labels,
-        source_file=path,
-        entities=bids_file.entities,
-    )
+    return cmd
 
 
-def write_connectome(
-    result: ConnectomeResult,
+@dataclass
+class ConnectomeResult:
+    """A computed connectivity matrix with full provenance metadata."""
+
+    matrix: np.ndarray  # shape (N, N)
+    atlas_name: str
+    measure: str  # e.g. "sift_invnodevol_radius2_count"
+    region_labels: list[str]
+    csv_path: Path
+    json_path: Path
+    tck_path: Path
+    dseg_path: Path
+    sift_weights_path: Path | None
+    cmd: list[str]
+
+
+def build_connectomes(
+    tck_file: BIDSFile,
+    dseg_file: AtlasDsegFile,
+    lut: AtlasLUT,
     output_dir: Path,
     subject: str,
     session: str,
-) -> tuple[Path, Path]:
-    """Write a connectome to the BIDS-derivative output layout.
+) -> list[ConnectomeResult]:
+    """Run all four tck2connectome measures for one tractogram × atlas pair.
 
-    Produces:
-    - A square CSV matrix (no headers, region order matches LUT)
-    - A JSON sidecar with metadata
+    Skips measures that require SIFT2 weights when none are found adjacent to
+    the tractogram. Raises on non-zero tck2connectome exit code (per-measure
+    failure — caller decides whether to continue with remaining subjects).
 
     Parameters
     ----------
-    result : ConnectomeResult
-        Validated connectome.
+    tck_file : BIDSFile
+        Discovered tractography file.
+    dseg_file : AtlasDsegFile
+        Atlas parcellation in subject diffusion space.
+    lut : AtlasLUT
+        Atlas LUT providing region labels for JSON sidecars.
     output_dir : Path
-        Root of the output derivatives tree.
+        Root output directory (BIDS-derivative layout).
     subject : str
-        Subject label (e.g. "sub-001").
+        Subject label with prefix (e.g. ``"sub-001"``).
     session : str
-        Session label (e.g. "ses-01").
+        Session label with prefix (e.g. ``"ses-01"``).
 
     Returns
     -------
-    tuple[Path, Path]
-        Paths to the written CSV and JSON files.
+    list[ConnectomeResult]
+        One entry per successfully completed measure.
+
+    Raises
+    ------
+    subprocess.CalledProcessError
+        If tck2connectome exits with a non-zero code for any measure.
     """
-    atlas_dir = output_dir / subject / session / "dwi" / f"atlas-{result.atlas_name}"
+    atlas_dir = (
+        output_dir / subject / session / "dwi" / f"atlas-{dseg_file.atlas_name}"
+    )
     atlas_dir.mkdir(parents=True, exist_ok=True)
 
-    stem = f"{subject}_{session}_atlas-{result.atlas_name}_desc-{result.edge_weight}_connmatrix"
-    csv_path = atlas_dir / f"{stem}.csv"
-    json_path = atlas_dir / f"{stem}.json"
+    sift_weights = find_sift_weights_for_tck(tck_file.path)
+    region_labels = [r.name for r in lut.regions]
+    results: list[ConnectomeResult] = []
 
-    np.savetxt(csv_path, result.matrix, delimiter=",", fmt="%.6f")
+    # Build a string of tck-source entities to disambiguate outputs when
+    # multiple tractograms exist in the same session (e.g. iFOD2 + SDStream).
+    # Skip sub/ses — they're already in the stem prefix.
+    _skip = {"sub", "ses"}
+    tck_entity_str = "_".join(
+        f"{k}-{v}"
+        for k, v in tck_file.entities.items()
+        if k not in _skip
+    )
 
-    sidecar = {
-        "atlas_name": result.atlas_name,
-        "edge_weight": result.edge_weight,
-        "n_regions": int(result.matrix.shape[0]),
-        "region_labels": result.region_labels,
-        "symmetric": bool(np.allclose(result.matrix, result.matrix.T, atol=1e-8)),
-        "source_file": str(result.source_file),
-        "source_entities": result.entities,
-    }
-    with open(json_path, "w") as f:
-        json.dump(sidecar, f, indent=2)
+    with _ensure_plain_tck(tck_file.path) as plain_tck:
+        for measure, spec in MEASURES.items():
+            if spec["needs_sift_weights"] and sift_weights is None:
+                logger.warning(
+                    "%s/%s | Skipping measure %s: no SIFT2 weights found near %s",
+                    subject,
+                    session,
+                    measure,
+                    tck_file.path.name,
+                )
+                continue
 
-    logger.info("Wrote connectome: %s", csv_path)
-    return csv_path, json_path
+            stem_parts = [subject, session]
+            if tck_entity_str:
+                stem_parts.append(tck_entity_str)
+            stem_parts += [
+                f"atlas-{dseg_file.atlas_name}",
+                f"desc-{measure}",
+                "connmatrix",
+            ]
+            stem = "_".join(stem_parts)
+            csv_path = atlas_dir / f"{stem}.csv"
+            json_path = atlas_dir / f"{stem}.json"
+
+            sw = sift_weights if spec["needs_sift_weights"] else None
+            cmd = build_tck2connectome_cmd(
+                plain_tck, dseg_file.path, csv_path, measure, sw
+            )
+
+            logger.info("%s/%s | Running: %s", subject, session, " ".join(cmd))
+            result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+            if result.returncode != 0:
+                logger.error(
+                    "%s/%s | tck2connectome failed for measure %s (exit %d):\n%s",
+                    subject,
+                    session,
+                    measure,
+                    result.returncode,
+                    result.stderr,
+                )
+                raise subprocess.CalledProcessError(
+                    result.returncode, cmd, result.stdout, result.stderr
+                )
+
+            matrix = np.loadtxt(csv_path, delimiter=",")
+
+            sidecar = {
+                "atlas_name": dseg_file.atlas_name,
+                "measure": measure,
+                "n_regions": len(region_labels),
+                "region_labels": region_labels,
+                "symmetric": True,
+                "source_tck": str(tck_file.path),
+                "source_dseg": str(dseg_file.path),
+                "sift_weights": str(sift_weights) if sift_weights else None,
+                "tck2connectome_cmd": cmd,
+            }
+            with open(json_path, "w") as f:
+                json.dump(sidecar, f, indent=2)
+
+            logger.info("%s/%s | Wrote connectome: %s", subject, session, csv_path)
+            results.append(
+                ConnectomeResult(
+                    matrix=matrix,
+                    atlas_name=dseg_file.atlas_name,
+                    measure=measure,
+                    region_labels=region_labels,
+                    csv_path=csv_path,
+                    json_path=json_path,
+                    tck_path=tck_file.path,
+                    dseg_path=dseg_file.path,
+                    sift_weights_path=sift_weights,
+                    cmd=cmd,
+                )
+            )
+
+    return results

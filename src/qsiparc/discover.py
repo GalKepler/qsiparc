@@ -286,10 +286,12 @@ def discover_scalar_maps(
         dwi_dir = workflow_dir / subject / session / "dwi"
         if not dwi_dir.is_dir():
             continue
-        for path in sorted(dwi_dir.glob("*space-ACPC*.nii.gz")):
-            if "_dseg" in path.name or "_desc-preproc_dwi" in path.name:
+        for path in sorted(dwi_dir.glob("*_dwimap.nii.gz")):
+            if "_dseg" in path.name:
                 continue
             entities = parse_entities(path.name)
+            if entities.get("space") != "ACPC":
+                continue
             if scalars:
                 param = entities.get("param", entities.get("desc", ""))
                 stem_lower = path.stem.lower()

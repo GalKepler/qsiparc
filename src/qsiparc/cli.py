@@ -24,13 +24,19 @@ from pathlib import Path
 
 import click
 
+from qsiparc.connectome import build_connectomes, check_mrtrix3
 from qsiparc.discover import (
     discover_dseg_files,
     discover_scalar_maps,
+    discover_tractography,
     load_lut_for_dseg,
 )
 from qsiparc.extract import extract_scalar_map
-from qsiparc.output import DiffmapProvenance, write_dataset_description, write_diffmap_tsv
+from qsiparc.output import (
+    DiffmapProvenance,
+    write_dataset_description,
+    write_diffmap_tsv,
+)
 
 logger = logging.getLogger("qsiparc")
 
@@ -124,6 +130,14 @@ def main(
     """
     _setup_logging(verbose)
 
+    # Check MRtrix3 availability once at startup.
+    mrtrix3_available = check_mrtrix3()
+    if not mrtrix3_available:
+        logger.warning(
+            "tck2connectome not found on PATH — connectome construction will"
+            " be skipped. Install MRtrix3 to enable this feature."
+        )
+
     # Discover atlas parcellations
     dseg_files = discover_dseg_files(
         qsirecon_dir,
@@ -205,6 +219,34 @@ def main(
                     logger.warning(
                         "%s | Failed to extract %s: %s", log_prefix, scalar_name, e
                     )
+
+            # --- Connectome construction ---
+            if mrtrix3_available:
+                tck_files = discover_tractography(
+                    qsirecon_dir, subject=sub, session=ses
+                )
+                if not tck_files:
+                    logger.debug(
+                        "%s | No tractography files found — skipping connectomes",
+                        log_prefix,
+                    )
+                for tck_file in tck_files:
+                    try:
+                        build_connectomes(
+                            tck_file=tck_file,
+                            dseg_file=dseg_file,
+                            lut=lut,
+                            output_dir=output_dir,
+                            subject=f"sub-{sub}",
+                            session=f"ses-{ses}",
+                        )
+                    except Exception as e:
+                        logger.error(
+                            "%s | Connectome failed for %s: %s",
+                            log_prefix,
+                            tck_file.path.name,
+                            e,
+                        )
 
             n_success += 1
             logger.info("%s | Done", log_prefix)
