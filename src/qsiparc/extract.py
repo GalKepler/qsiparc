@@ -69,7 +69,8 @@ def extract_scalar_map(
     dseg_path: str | Path | nib.Nifti1Image,
     lut: AtlasLUT,
     scalar_name: str,
-    zero_is_missing: bool = True,
+    stat_tier: str = "extended",
+    zero_is_missing: bool = False,
 ) -> ExtractionResult:
     """Extract per-region statistics from a scalar NIfTI map.
 

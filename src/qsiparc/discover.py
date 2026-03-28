@@ -85,6 +85,20 @@ class BIDSFile:
         # Real QSIRecon uses seg- entity; older fixtures may use atlas-
         return self.entities.get("seg", self.entities.get("atlas", ""))
 
+    @property
+    def software(self) -> str:
+        """Extract the QSIRecon workflow name from the path.
+
+        Returns the suffix after ``qsirecon-`` in the workflow directory
+        component of the path (e.g. ``"AMICONODDI"`` from
+        ``derivatives/qsirecon-AMICONODDI/...``). Returns an empty string
+        if the path does not pass through a ``qsirecon-*`` directory.
+        """
+        for part in self.path.parts:
+            if part.startswith("qsirecon-"):
+                return part[len("qsirecon-"):].replace("_", "").replace("-", "")
+        return ""
+
 
 @dataclass(frozen=True)
 class AtlasDsegFile:
@@ -272,7 +286,7 @@ def discover_scalar_maps(
         dwi_dir = workflow_dir / subject / session / "dwi"
         if not dwi_dir.is_dir():
             continue
-        for path in sorted(dwi_dir.glob("*.nii.gz")):
+        for path in sorted(dwi_dir.glob("*space-ACPC*.nii.gz")):
             if "_dseg" in path.name or "_desc-preproc_dwi" in path.name:
                 continue
             entities = parse_entities(path.name)

@@ -29,9 +29,8 @@ from qsiparc.discover import (
     discover_scalar_maps,
     load_lut_for_dseg,
 )
-from qsiparc.connectome import load_connectome, write_connectome
-from qsiparc.extract import extract_scalar_map, merge_extraction_results
-from qsiparc.output import write_dataset_description, write_diffmap_tsv
+from qsiparc.extract import extract_scalar_map
+from qsiparc.output import DiffmapProvenance, write_dataset_description, write_diffmap_tsv
 
 logger = logging.getLogger("qsiparc")
 
@@ -81,10 +80,21 @@ def _setup_logging(verbosity: int) -> None:
     help="Scalar names to extract (default: all discovered). Repeatable.",
 )
 @click.option(
-    "--skip-connectomes",
+    "--stat-tier",
+    type=click.Choice(["core", "extended", "diagnostic", "all"], case_sensitive=False),
+    default="extended",
+    help="Statistic tier for extraction (default: extended).",
+)
+@click.option(
+    "--zero-is-missing",
     is_flag=True,
     default=False,
-    help="Skip connectivity matrix extraction.",
+    help=(
+        "Treat zero-valued voxels as missing data during extraction."
+        " By default, zeros are included in statistics. Use this flag to"
+        " exclude them (e.g. if zero represents no data rather than a true"
+        " value)."
+    ),
 )
 @click.option(
     "--dry-run",
@@ -102,7 +112,8 @@ def main(
     session_label: str | None,
     atlas: str | None,
     scalars: tuple[str, ...],
-    skip_connectomes: bool,
+    stat_tier: str,
+    zero_is_missing: bool,
     dry_run: bool,
     verbose: int,
 ) -> None:
@@ -158,7 +169,6 @@ def main(
                 scalars=list(scalars) if scalars else None,
             )
 
-            results = []
             for sf in scalar_files:
                 scalar_name = sf.entities.get(
                     "param", sf.entities.get("desc", sf.path.stem.split("_")[-1])
@@ -168,28 +178,33 @@ def main(
                         scalar_path=str(sf.path),
                         dseg_path=str(dseg_file.path),
                         lut=lut,
+                        stat_tier=stat_tier,
+                        zero_is_missing=zero_is_missing,
                         scalar_name=scalar_name,
                     )
-                    results.append(result)
+                    provenance = DiffmapProvenance(
+                        subject=f"sub-{sub}",
+                        session=f"ses-{ses}",
+                        atlas_name=atlas_name,
+                        atlas_dseg=dseg_file.path,
+                        lut_file=dseg_file.lut_path,
+                        scalar_name=scalar_name,
+                        source_file=sf.path,
+                        source_entities=sf.entities,
+                        software=sf.software or None,
+                    )
+                    write_diffmap_tsv(
+                        df=result.stats_df,
+                        output_dir=output_dir,
+                        subject=f"sub-{sub}",
+                        session=f"ses-{ses}",
+                        atlas_name=atlas_name,
+                        provenance=provenance,
+                    )
                 except Exception as e:
                     logger.warning(
                         "%s | Failed to extract %s: %s", log_prefix, scalar_name, e
                     )
-
-            if results:
-                combined_df = merge_extraction_results(results)
-                write_diffmap_tsv(
-                    df=combined_df,
-                    output_dir=output_dir,
-                    subject=f"sub-{sub}",
-                    session=f"ses-{ses}",
-                    atlas_name=atlas_name,
-                )
-
-            # --- Connectome extraction ---
-            if not skip_connectomes:
-                # TODO: implement tck2connectome calls
-                pass
 
             n_success += 1
             logger.info("%s | Done", log_prefix)
