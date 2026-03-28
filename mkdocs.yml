@@ -1,0 +1,103 @@
+site_name: QSIParc
+site_description: Parcellated diffusion feature extraction from QSIRecon outputs
+site_author: Gal Kepler
+repo_url: https://github.com/GalKepler/qsiparc
+repo_name: GalKepler/qsiparc
+edit_uri: ""
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  logo: assets/qsiparc_logo.png
+  favicon: assets/qsiparc_logo.png
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/brain
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quick Start: quickstart.md
+  - User Guide:
+      - Input Layout: user-guide/inputs.md
+      - CLI Reference: user-guide/cli.md
+      - Output Format: user-guide/outputs.md
+      - Diffusion Scalars: user-guide/scalars.md
+      - Connectivity Matrices: user-guide/connectomes.md
+      - Atlases: user-guide/atlases.md
+  - API Reference:
+      - Overview: api/index.md
+      - discover: api/discover.md
+      - atlas: api/atlas.md
+      - extract: api/extract.md
+      - connectome: api/connectome.md
+      - output: api/output.md
+  - Contributing: contributing.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/GalKepler/qsiparc
+  version:
+    provider: mike
