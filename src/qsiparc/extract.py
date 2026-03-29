@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 import nibabel as nib
 import numpy as np
@@ -39,7 +40,7 @@ OUTPUT_COLUMNS = [
 
 @dataclass(frozen=True)
 class ExtractionResult:
-    """Container for one scalar × one atlas extraction."""
+    """Container for one scalar x one atlas extraction."""
 
     scalar_name: str
     atlas_name: str
@@ -93,15 +94,17 @@ def extract_scalar_map(
     ExtractionResult
         DataFrame with one row per atlas region and columns per OUTPUT_COLUMNS.
     """
-    scalar_img = (
-        nib.load(scalar_path) if isinstance(scalar_path, str | Path) else scalar_path
+    scalar_img = cast(
+        nib.Nifti1Image,
+        nib.load(scalar_path) if isinstance(scalar_path, str | Path) else scalar_path,
     )
-    dseg_img = (
-        nib.load(dseg_path) if isinstance(dseg_path, str | Path) else dseg_path
+    dseg_img = cast(
+        nib.Nifti1Image,
+        nib.load(dseg_path) if isinstance(dseg_path, str | Path) else dseg_path,
     )
 
     scalar_data = np.asarray(scalar_img.dataobj, dtype=np.float64)
-    dseg_data = np.round(np.asarray(dseg_img.dataobj, dtype=np.int32))
+    dseg_data = np.round(np.asarray(dseg_img.dataobj, dtype="int32"))
 
     if scalar_data.shape[:3] != dseg_data.shape[:3]:
         raise ValueError(
@@ -118,16 +121,12 @@ def extract_scalar_map(
             scalar_data.shape,
         )
         scalar_data = scalar_data[..., 0]
-        scalar_img = nib.Nifti1Image(
-            scalar_data, scalar_img.affine, scalar_img.header
-        )
+        scalar_img = nib.Nifti1Image(scalar_data, scalar_img.affine, scalar_img.header)
 
     if zero_is_missing:
         scalar_data = scalar_data.copy()
         scalar_data[scalar_data == 0.0] = np.nan
-        scalar_img = nib.Nifti1Image(
-            scalar_data, scalar_img.affine, scalar_img.header
-        )
+        scalar_img = nib.Nifti1Image(scalar_data, scalar_img.affine, scalar_img.header)
 
     # Compute n_voxels and coverage from the already-loaded arrays.
     # parcellate's voxel_count is the total atlas count, not the valid-signal count.

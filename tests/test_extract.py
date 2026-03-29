@@ -11,7 +11,9 @@ from qsiparc.extract import extract_scalar_map, merge_extraction_results
 class TestExtractScalarMap:
     """Tests for the full extraction pipeline."""
 
-    def test_uniform_scalar(self, five_region_lut, synthetic_dseg, synthetic_scalar_uniform):
+    def test_uniform_scalar(
+        self, five_region_lut, synthetic_dseg, synthetic_scalar_uniform
+    ):
         result = extract_scalar_map(
             scalar_path=synthetic_scalar_uniform,
             dseg_path=synthetic_dseg,
@@ -28,7 +30,9 @@ class TestExtractScalarMap:
         uniform_std = df.loc[df["voxel_count"] > 1, "std"]
         assert all(uniform_std < 1e-10)
 
-    def test_gradient_scalar(self, five_region_lut, synthetic_dseg, synthetic_scalar_gradient):
+    def test_gradient_scalar(
+        self, five_region_lut, synthetic_dseg, synthetic_scalar_gradient
+    ):
         result = extract_scalar_map(
             scalar_path=synthetic_scalar_gradient,
             dseg_path=synthetic_dseg,
@@ -45,6 +49,7 @@ class TestExtractScalarMap:
 
     def test_shape_mismatch_raises(self, five_region_lut, synthetic_dseg):
         import nibabel as nib
+
         wrong_shape = nib.Nifti1Image(np.zeros((5, 5, 5)), np.eye(4))
         with pytest.raises(ValueError, match="Shape mismatch"):
             extract_scalar_map(wrong_shape, synthetic_dseg, five_region_lut, "FA")
@@ -53,12 +58,22 @@ class TestExtractScalarMap:
 class TestMergeResults:
     """Tests for combining multiple ExtractionResults."""
 
-    def test_merge(self, five_region_lut, synthetic_dseg, synthetic_scalar_uniform, synthetic_scalar_gradient):
-        r1 = extract_scalar_map(synthetic_scalar_uniform, synthetic_dseg, five_region_lut, "FA")
-        r2 = extract_scalar_map(synthetic_scalar_gradient, synthetic_dseg, five_region_lut, "MD")
+    def test_merge(
+        self,
+        five_region_lut,
+        synthetic_dseg,
+        synthetic_scalar_uniform,
+        synthetic_scalar_gradient,
+    ):
+        r1 = extract_scalar_map(
+            synthetic_scalar_uniform, synthetic_dseg, five_region_lut, "FA"
+        )
+        r2 = extract_scalar_map(
+            synthetic_scalar_gradient, synthetic_dseg, five_region_lut, "MD"
+        )
 
         combined = merge_extraction_results([r1, r2])
-        assert len(combined) == 10  # 5 regions × 2 scalars
+        assert len(combined) == 10  # 5 regions x 2 scalars
         assert set(combined["scalar"]) == {"FA", "MD"}
 
     def test_merge_empty(self):

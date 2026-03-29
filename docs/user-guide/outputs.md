@@ -4,16 +4,16 @@ QSIParc writes outputs in a BIDS-derivative layout. This page describes every fi
 
 ## Directory structure
 
-```
+``` annotate
 <output_dir>/
-├── dataset_description.json                          # (1)
+├── dataset_description.json                          # (1)!
 └── sub-{label}/
     └── ses-{label}/
         └── dwi/
             └── atlas-{atlas_name}/
-                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.tsv   # (2)
-                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.json  # (3)
-                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.csv   # (4)
+                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.tsv   # (2)!
+                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.json  # (3)!
+                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.csv   # (4)!
                 ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.json
                 ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.csv
                 ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.json

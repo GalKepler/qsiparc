@@ -6,7 +6,7 @@
 
 **Parcellated diffusion feature extraction and structural connectome construction from [QSIRecon](https://qsirecon.readthedocs.io/) outputs.**
 
-QSIParc is one half of the [SNBB](https://github.com/snbb) neuroimaging feature extraction stack, paired with **fsatlas** (FreeSurfer morphometrics). It reads atlas parcellations and diffusion scalar maps produced by QSIRecon, computes per-region distribution statistics, builds structural connectivity matrices, and writes analysis-ready outputs in a BIDS-derivative layout.
+QSIParc is one half of the Strauss Neuroplasticity Brain Bank ([SNBB](https://www.snbb.sites.tau.ac.il/)) neuroimaging feature extraction stack, paired with **fsatlas** (FreeSurfer morphometrics). It reads atlas parcellations and diffusion scalar maps produced by QSIRecon, computes per-region distribution statistics, builds structural connectivity matrices, and writes analysis-ready outputs in a BIDS-derivative layout.
 
 ---
 

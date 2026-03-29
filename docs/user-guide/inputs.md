@@ -4,23 +4,23 @@ QSIParc reads from a QSIRecon derivatives directory. This page describes the exp
 
 ## Directory structure
 
-```
+``` annotate
 <qsirecon_dir>/
-├── atlases/                                          # (1)
+├── atlases/                                          # (1)!
 │   └── atlas-{name}/
 │       └── {name}_dseg.tsv
 ├── sub-{label}/
 │   └── ses-{label}/
 │       └── dwi/
-│           └── sub-{label}_ses-{label}_space-T1w_seg-{atlas}_dseg.nii.gz   # (2)
+│           └── sub-{label}_ses-{label}_space-T1w_seg-{atlas}_dseg.nii.gz   # (2)!
 └── derivatives/
-    └── qsirecon-{workflow}/                          # (3)
+    └── qsirecon-{workflow}/                          # (3)!
         └── sub-{label}/
             └── ses-{label}/
                 └── dwi/
-                    ├── sub-{label}_ses-{label}_space-ACPC_param-{scalar}_dwimap.nii.gz  # (4)
-                    ├── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlines.tck.gz  # (5)
-                    └── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlineweights.csv  # (6)
+                    ├── sub-{label}_ses-{label}_space-ACPC_param-{scalar}_dwimap.nii.gz  # (4)!
+                    ├── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlines.tck.gz  # (5)!
+                    └── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlineweights.csv  # (6)!
 ```
 
 1. **Atlas LUT directory** — QSIRecon ships TSV label files here. QSIParc uses these for human-readable region names.

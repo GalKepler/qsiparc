@@ -1,3 +1,15 @@
+<p align="center">
+  <img src="docs/assets/qsiparc_logo.png" alt="QSIParc logo" width="350">
+</p>
+
+<p align="center">
+  <a href="https://github.com/GalKepler/qsiparc/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/GalKepler/qsiparc/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://galkepler.github.io/qsiparc/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-blue"></a>
+  <a href="https://pypi.org/project/qsiparc/"><img alt="PyPI" src="https://img.shields.io/pypi/v/qsiparc"></a>
+  <a href="https://pypi.org/project/qsiparc/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/qsiparc"></a>
+  <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green"></a>
+</p>
+
 # QSIParc
 
 Parcellated diffusion feature extraction from [QSIRecon](https://qsirecon.readthedocs.io/) outputs.
@@ -83,6 +95,10 @@ pytest --cov=qsiparc
 ```
 
 All tests use synthetic 10×10×10 NIfTI volumes — no real data required.
+
+## Contributing
+
+Bug reports, documentation fixes, and pull requests are welcome. See [CONTRIBUTING](https://galkepler.github.io/qsiparc/contributing/) for setup instructions, code style, and guidelines on what is in scope.
 
 ## License
 

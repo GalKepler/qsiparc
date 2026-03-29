@@ -3,7 +3,7 @@
 QSIRecon produces tractography (.tck) and SIFT2 streamline weights, but does
 NOT run tck2connectome — that step is QSIParc's responsibility.
 
-For each tractogram × atlas combination, QSIParc runs four tck2connectome
+For each tractogram x atlas combination, QSIParc runs four tck2connectome
 variants and writes a CSV matrix + JSON sidecar for each.
 """
 
@@ -16,6 +16,7 @@ import logging
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -35,35 +36,43 @@ logger = logging.getLogger(__name__)
 MEASURES: dict[str, dict] = {
     "sift_invnodevol_radius2_count": {
         "flags": [
-            "-assignment_radial_search", "2",
+            "-assignment_radial_search",
+            "2",
             "-scale_invnodevol",
             "-symmetric",
-            "-stat_edge", "sum",
+            "-stat_edge",
+            "sum",
         ],
         "needs_sift_weights": True,
     },
     "radius2_meanlength": {
         "flags": [
-            "-assignment_radial_search", "2",
+            "-assignment_radial_search",
+            "2",
             "-scale_length",
             "-symmetric",
-            "-stat_edge", "mean",
+            "-stat_edge",
+            "mean",
         ],
         "needs_sift_weights": False,
     },
     "radius2_count": {
         "flags": [
-            "-assignment_radial_search", "2",
+            "-assignment_radial_search",
+            "2",
             "-symmetric",
-            "-stat_edge", "sum",
+            "-stat_edge",
+            "sum",
         ],
         "needs_sift_weights": False,
     },
     "sift_radius2_count": {
         "flags": [
-            "-assignment_radial_search", "2",
+            "-assignment_radial_search",
+            "2",
             "-symmetric",
-            "-stat_edge", "sum",
+            "-stat_edge",
+            "sum",
         ],
         "needs_sift_weights": True,
     },
@@ -76,7 +85,7 @@ def check_mrtrix3() -> bool:
 
 
 @contextlib.contextmanager
-def _ensure_plain_tck(tck_path: Path):
+def _ensure_plain_tck(tck_path: Path) -> Generator[Path, None, None]:
     """Yield a plain .tck path, decompressing .tck.gz to a temp file if needed.
 
     MRtrix3's tck2connectome does not accept gzip-compressed tractograms.
@@ -85,8 +94,8 @@ def _ensure_plain_tck(tck_path: Path):
     temporary file on exit.  Plain ``.tck`` files are yielded unchanged.
     """
     if tck_path.suffix == ".gz" and tck_path.stem.endswith(".tck"):
-        tmp = tempfile.NamedTemporaryFile(suffix=".tck", delete=False)
-        tmp_path = Path(tmp.name)
+        with tempfile.NamedTemporaryFile(suffix=".tck", delete=False) as tmp:
+            tmp_path = Path(tmp.name)
         try:
             logger.debug("Decompressing %s → %s", tck_path.name, tmp_path.name)
             with gzip.open(tck_path, "rb") as src, open(tmp_path, "wb") as dst:
@@ -131,7 +140,7 @@ def build_tck2connectome_cmd(
     dseg_path : Path
         Atlas parcellation in subject diffusion space (node image).
     out_csv : Path
-        Destination CSV for the N×N matrix.
+        Destination CSV for the N x N matrix.
     measure : str
         One of the keys in MEASURES.
     sift_weights : Path, optional
@@ -197,7 +206,7 @@ def build_connectomes(
     session: str,
     force: bool = False,
 ) -> list[ConnectomeResult]:
-    """Run all four tck2connectome measures for one tractogram × atlas pair.
+    """Run all four tck2connectome measures for one tractogram x atlas pair.
 
     Skips measures that require SIFT2 weights when none are found adjacent to
     the tractogram. Raises on non-zero tck2connectome exit code (per-measure
@@ -228,9 +237,7 @@ def build_connectomes(
     subprocess.CalledProcessError
         If tck2connectome exits with a non-zero code for any measure.
     """
-    atlas_dir = (
-        output_dir / subject / session / "dwi" / f"atlas-{dseg_file.atlas_name}"
-    )
+    atlas_dir = output_dir / subject / session / "dwi" / f"atlas-{dseg_file.atlas_name}"
     atlas_dir.mkdir(parents=True, exist_ok=True)
 
     sift_weights = find_sift_weights_for_tck(tck_file.path)
@@ -242,9 +249,7 @@ def build_connectomes(
     # Skip sub/ses — they're already in the stem prefix.
     _skip = {"sub", "ses"}
     tck_entity_str = "_".join(
-        f"{k}-{v}"
-        for k, v in tck_file.entities.items()
-        if k not in _skip
+        f"{k}-{v}" for k, v in tck_file.entities.items() if k not in _skip
     )
 
     with _ensure_plain_tck(tck_file.path) as plain_tck:

@@ -14,7 +14,6 @@ import pytest
 
 from qsiparc.connectome import (
     MEASURES,
-    ConnectomeResult,
     _ensure_plain_tck,
     build_tck2connectome_cmd,
     check_mrtrix3,
@@ -22,18 +21,20 @@ from qsiparc.connectome import (
 )
 from qsiparc.discover import AtlasDsegFile, BIDSFile
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_bids_file(path: Path) -> BIDSFile:
     from qsiparc.discover import parse_entities
+
     return BIDSFile(path=path, entities=parse_entities(path.name))
 
 
 def _make_dseg_file(path: Path, atlas_name: str = "TestAtlas5") -> AtlasDsegFile:
     from qsiparc.discover import parse_entities
+
     return AtlasDsegFile(
         path=path,
         entities=parse_entities(path.name),
@@ -45,6 +46,7 @@ def _make_dseg_file(path: Path, atlas_name: str = "TestAtlas5") -> AtlasDsegFile
 # ---------------------------------------------------------------------------
 # _ensure_plain_tck
 # ---------------------------------------------------------------------------
+
 
 def test_ensure_plain_tck_passthrough(tmp_path: Path):
     """Plain .tck files are yielded unchanged."""
@@ -84,10 +86,9 @@ def test_ensure_plain_tck_cleans_up_on_exception(tmp_path: Path):
         f.write(b"data")
 
     tmp_path_ref = None
-    with pytest.raises(RuntimeError):
-        with _ensure_plain_tck(tck_gz) as plain:
-            tmp_path_ref = plain
-            raise RuntimeError("simulated failure")
+    with pytest.raises(RuntimeError), _ensure_plain_tck(tck_gz) as plain:
+        tmp_path_ref = plain
+        raise RuntimeError("simulated failure")
 
     assert tmp_path_ref is not None
     assert not tmp_path_ref.exists()
@@ -96,6 +97,7 @@ def test_ensure_plain_tck_cleans_up_on_exception(tmp_path: Path):
 # ---------------------------------------------------------------------------
 # check_mrtrix3
 # ---------------------------------------------------------------------------
+
 
 def test_check_mrtrix3_found():
     with patch("shutil.which", return_value="/usr/bin/tck2connectome"):
@@ -110,6 +112,7 @@ def test_check_mrtrix3_missing():
 # ---------------------------------------------------------------------------
 # find_sift_weights_for_tck
 # ---------------------------------------------------------------------------
+
 
 def test_find_sift_weights_streamlineweights(tmp_path: Path):
     tck = tmp_path / "sub-001_ses-01_streamlines.tck.gz"
@@ -164,7 +167,9 @@ WEIGHTS = Path("/data/sub-001_ses-01_streamlineweights.csv")
 def test_cmd_sift_invnodevol_radius2_count():
     out = Path("/out/connmatrix.csv")
     cmd = build_tck2connectome_cmd(
-        TCK, DSEG, out,
+        TCK,
+        DSEG,
+        out,
         "sift_invnodevol_radius2_count",
         sift_weights=WEIGHTS,
     )
@@ -253,6 +258,7 @@ def test_cmd_symmetric_for_all_measures():
 # build_connectomes — mocked subprocess
 # ---------------------------------------------------------------------------
 
+
 def test_build_connectomes_writes_all_measures(
     tmp_path: Path,
     bids_tree: dict,
@@ -267,7 +273,7 @@ def test_build_connectomes_writes_all_measures(
     dseg_file = _make_dseg_file(bids_tree["dseg"])
     output_dir = tmp_path / "out"
 
-    # Patch subprocess.run to write a fake 5×5 matrix CSV
+    # Patch subprocess.run to write a fake 5x5 matrix CSV
     def fake_run(cmd, **kwargs):
         # The third positional arg in the cmd is the output CSV path
         out_csv = Path(cmd[3])
@@ -278,6 +284,7 @@ def test_build_connectomes_writes_all_measures(
 
     with patch("qsiparc.connectome.subprocess.run", side_effect=fake_run):
         from qsiparc.connectome import build_connectomes
+
         results = build_connectomes(
             tck_file=tck_file,
             dseg_file=dseg_file,
@@ -331,6 +338,7 @@ def test_build_connectomes_skips_sift_measures_without_weights(
 
     with patch("qsiparc.connectome.subprocess.run", side_effect=fake_run):
         from qsiparc.connectome import build_connectomes
+
         results = build_connectomes(
             tck_file=tck_file,
             dseg_file=dseg_file,
@@ -370,6 +378,7 @@ def test_build_connectomes_disambiguates_multiple_tck_files(
 
     with patch("qsiparc.connectome.subprocess.run", side_effect=fake_run):
         from qsiparc.connectome import build_connectomes
+
         results_a = build_connectomes(
             tck_file=_make_bids_file(tck_a),
             dseg_file=dseg_file,
@@ -422,6 +431,7 @@ def test_build_connectomes_raises_on_nonzero_exit(
 
     with patch("qsiparc.connectome.subprocess.run", side_effect=failing_run):
         from qsiparc.connectome import build_connectomes
+
         with pytest.raises(subprocess.CalledProcessError):
             build_connectomes(
                 tck_file=tck_file,
@@ -437,8 +447,14 @@ def test_build_connectomes_raises_on_nonzero_exit(
 # Integration test (skipped without MRtrix3 or real .tck data)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.skipif(not check_mrtrix3(), reason="MRtrix3 not available")
-@pytest.mark.skip(reason="Requires a valid .tck tractogram; synthetic placeholder files are not supported by tck2connectome")
+@pytest.mark.skip(
+    reason=(
+        "Requires a valid .tck tractogram; "
+        "synthetic placeholder files are not supported by tck2connectome"
+    )
+)
 def test_build_connectomes_integration(tmp_path, bids_tree, five_region_lut):
     """Full end-to-end test against real tck2connectome.
 

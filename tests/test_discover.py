@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from qsiparc.atlas import AtlasLUT, infer_hemisphere, load_lut_from_tsv
+from qsiparc.atlas import infer_hemisphere, load_lut_from_tsv
 from qsiparc.discover import (
     AtlasDsegFile,
     discover_dseg_files,
@@ -19,7 +19,8 @@ from qsiparc.discover import (
 
 class TestParseEntities:
     def test_standard_bids(self):
-        entities = parse_entities("sub-001_ses-01_space-T1w_seg-Schaefer100_dseg.nii.gz")
+        fname = "sub-001_ses-01_space-T1w_seg-Schaefer100_dseg.nii.gz"
+        entities = parse_entities(fname)
         assert entities["sub"] == "001"
         assert entities["ses"] == "01"
         assert entities["space"] == "T1w"
@@ -58,9 +59,7 @@ class TestLoadLutFromTsv:
         """TSVs with explicit 'name', 'hemisphere' columns also work."""
         tsv = tmp_path / "lut.tsv"
         tsv.write_text(
-            "index\tname\themisphere\n"
-            "1\tLH_Vis_1\tL\n"
-            "4\tThalamus_L\tL\n"
+            "index\tname\themisphere\n" "1\tLH_Vis_1\tL\n" "4\tThalamus_L\tL\n"
         )
         lut = load_lut_from_tsv(tsv, atlas_name="X")
         assert lut[1].hemisphere == "L"
@@ -96,6 +95,7 @@ class TestLoadLutForDseg:
 
     def test_fallback_when_no_lut(self, bids_tree):
         from qsiparc.discover import AtlasDsegFile
+
         dseg_file = AtlasDsegFile(
             path=bids_tree["dseg"],
             entities={"sub": "001", "ses": "01"},
@@ -146,12 +146,16 @@ class TestDiscoverScalarMaps:
         assert any("MD" in n for n in names)
 
     def test_filter_scalars(self, bids_tree):
-        files = discover_scalar_maps(bids_tree["root"], "sub-001", "ses-01", scalars=["FA"])
+        files = discover_scalar_maps(
+            bids_tree["root"], "sub-001", "ses-01", scalars=["FA"]
+        )
         assert len(files) == 1
         assert "FA" in files[0].path.name
 
     def test_entities_parsed(self, bids_tree):
-        files = discover_scalar_maps(bids_tree["root"], "sub-001", "ses-01", scalars=["FA"])
+        files = discover_scalar_maps(
+            bids_tree["root"], "sub-001", "ses-01", scalars=["FA"]
+        )
         assert files[0].entities.get("param") == "FA"
         assert files[0].entities.get("model") == "DTI"
 

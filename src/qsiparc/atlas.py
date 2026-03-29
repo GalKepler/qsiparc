@@ -11,6 +11,7 @@ import json
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -122,7 +123,7 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
         return _parse_freesurfer_lut(path, atlas_name)
 
     # Normalize column names
-    df.columns = [str(c).lower().strip() for c in df.columns]
+    df.columns = pd.Index([str(c).lower().strip() for c in df.columns])
 
     # Identify index and name columns.
     # "label" is a name candidate (QSIRecon atlas TSVs use index + label columns).
@@ -132,7 +133,8 @@ def load_lut_from_tsv(path: Path, atlas_name: str = "") -> AtlasLUT:
     )
     name_col = next(
         (
-            c for c in df.columns
+            c
+            for c in df.columns
             if c in ("name", "label", "region", "label_name", "region_name")
         ),
         df.columns[1],
@@ -195,9 +197,9 @@ def load_lut_from_dseg(dseg_path: Path, atlas_name: str = "") -> AtlasLUT:
     """
     import nibabel as nib
 
-    img = nib.load(dseg_path)
-    data = np.asarray(img.dataobj, dtype=np.int32)
-    unique_labels = sorted(set(data.ravel()) - {0})
+    img = cast(nib.Nifti1Image, nib.load(dseg_path))
+    data = np.asarray(img.dataobj, dtype="int32")
+    unique_labels: list[int] = sorted(int(v) for v in np.unique(data) if v != 0)
 
     regions = [
         RegionInfo(index=int(idx), name=f"region_{idx:04d}", hemisphere="bilateral")

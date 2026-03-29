@@ -55,9 +55,10 @@ def _setup_logging(verbosity: int) -> None:
 
 @click.command()
 @click.argument(
-    "qsirecon_dir", type=click.Path(exists=True, file_okay=False, path_type=Path)
+    "qsirecon_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),  # type: ignore[type-var]
 )
-@click.argument("output_dir", type=click.Path(path_type=Path))
+@click.argument("output_dir", type=click.Path(path_type=Path))  # type: ignore[type-var]
 @click.option(
     "--participant-label",
     "-p",

@@ -8,10 +8,13 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
-import pytest
 
-from qsiparc.connectome import MEASURES, build_connectomes
-from qsiparc.discover import BIDSFile, discover_dseg_files, discover_scalar_maps, load_lut_for_dseg
+from qsiparc.connectome import build_connectomes
+from qsiparc.discover import (
+    discover_dseg_files,
+    discover_scalar_maps,
+    load_lut_for_dseg,
+)
 from qsiparc.extract import extract_scalar_map, merge_extraction_results
 from qsiparc.output import write_dataset_description, write_diffmap_tsv
 
@@ -54,19 +57,22 @@ class TestFullPipeline:
 
         # 4. Merge and write
         combined = merge_extraction_results(results)
-        tsv_path = write_diffmap_tsv(combined, output_dir, "sub-001", "ses-01", "TestAtlas5")
+        tsv_path = write_diffmap_tsv(
+            combined, output_dir, "sub-001", "ses-01", "TestAtlas5"
+        )
 
         assert tsv_path.exists()
         assert "atlas-TestAtlas5" in str(tsv_path)
         assert tsv_path.suffix == ".tsv"
 
         df = pd.read_csv(tsv_path, sep="\t")
-        assert len(df) == 10  # 5 regions × 2 scalars
+        assert len(df) == 10  # 5 regions x 2 scalars
         assert "mean" in df.columns
         assert "scalar" in df.columns
 
         # 5. Connectome construction via tck2connectome (subprocess mocked)
-        from qsiparc.discover import discover_tractography, parse_entities
+        from qsiparc.discover import discover_tractography
+
         tck_files = discover_tractography(qsirecon_dir, "sub-001", "ses-01")
         assert len(tck_files) == 1
 

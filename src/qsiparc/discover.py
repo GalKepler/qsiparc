@@ -96,7 +96,7 @@ class BIDSFile:
         """
         for part in self.path.parts:
             if part.startswith("qsirecon-"):
-                return part[len("qsirecon-"):].replace("_", "").replace("-", "")
+                return part[len("qsirecon-") :].replace("_", "").replace("-", "")
         return ""
 
 
@@ -212,9 +212,7 @@ def discover_dseg_files(
     sub_pattern = (
         sanitize_participant_label(participant_label) if participant_label else "sub-*"
     )
-    ses_pattern = (
-        sanitize_session_label(session_label) if session_label else "ses-*"
-    )
+    ses_pattern = sanitize_session_label(session_label) if session_label else "ses-*"
 
     glob_pattern = f"{sub_pattern}/{ses_pattern}/dwi/*_dseg.nii.gz"
     results = []

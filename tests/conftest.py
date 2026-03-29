@@ -1,12 +1,11 @@
 """Shared test fixtures: synthetic NIfTI data and BIDS directory trees.
 
-These fixtures produce small (10×10×10) volumes with known values so that
+These fixtures produce small (10x10x10) volumes with known values so that
 extraction results can be verified deterministically.
 """
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import nibabel as nib
@@ -33,7 +32,7 @@ def five_region_lut() -> AtlasLUT:
 
 @pytest.fixture
 def synthetic_dseg() -> nib.Nifti1Image:
-    """A 10×10×10 parcellation with 5 regions in known locations.
+    """A 10x10x10 parcellation with 5 regions in known locations.
 
     Layout (z-slices):
         z=0,1: region 1 (20 voxels)
@@ -91,7 +90,7 @@ def bids_tree(tmp_path: Path) -> dict[str, Path]:
             qsirecon-DTI/sub-001/ses-01/dwi/
               sub-001_ses-01_space-ACPC_model-DTI_param-FA_dwimap.nii.gz
               sub-001_ses-01_space-ACPC_model-DTI_param-MD_dwimap.nii.gz
-              sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz  # excluded
+              sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz
             qsirecon-MRtrix3/sub-001/ses-01/dwi/
               sub-001_ses-01_space-T1w_model-ifod2_streamlines.tck.gz
               sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv
@@ -141,17 +140,24 @@ def bids_tree(tmp_path: Path) -> dict[str, Path]:
 
     # MNI-space map — should be excluded by discover_scalar_maps
     mni_fa_data = np.random.default_rng(99).uniform(0.1, 0.9, shape).astype(np.float64)
-    mni_fa_path = dti_dwi / "sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz"
+    mni_fa_name = (
+        "sub-001_ses-01_space-MNI152NLin2009cAsym_model-DTI_param-FA_dwimap.nii.gz"
+    )
+    mni_fa_path = dti_dwi / mni_fa_name
     nib.save(nib.Nifti1Image(mni_fa_data, affine), mni_fa_path)
 
     # --- Tractography + SIFT2 weights in derivatives/qsirecon-MRtrix3/ ---
-    mrtrix_dwi = root / "derivatives" / "qsirecon-MRtrix3" / "sub-001" / "ses-01" / "dwi"
+    mrtrix_dwi = (
+        root / "derivatives" / "qsirecon-MRtrix3" / "sub-001" / "ses-01" / "dwi"
+    )
     mrtrix_dwi.mkdir(parents=True)
 
     tck_path = mrtrix_dwi / "sub-001_ses-01_space-T1w_model-ifod2_streamlines.tck.gz"
     tck_path.write_bytes(b"")  # placeholder — content not needed for discovery tests
 
-    sift_path = mrtrix_dwi / "sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv"
+    sift_path = (
+        mrtrix_dwi / "sub-001_ses-01_space-T1w_model-sift2_streamlineweights.csv"
+    )
     np.savetxt(sift_path, np.ones(10), delimiter=",", fmt="%.6f")
 
     # --- Connectivity matrix (used directly by integration tests) ---
