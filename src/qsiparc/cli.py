@@ -34,6 +34,7 @@ from qsiparc.discover import (
 from qsiparc.extract import extract_scalar_map
 from qsiparc.output import (
     DiffmapProvenance,
+    diffmap_tsv_path,
     write_dataset_description,
     write_diffmap_tsv,
 )
@@ -103,6 +104,12 @@ def _setup_logging(verbosity: int) -> None:
     ),
 )
 @click.option(
+    "--force",
+    is_flag=True,
+    default=False,
+    help="Overwrite existing outputs (default: skip already-completed outputs).",
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     default=False,
@@ -120,6 +127,7 @@ def main(
     scalars: tuple[str, ...],
     stat_tier: str,
     zero_is_missing: bool,
+    force: bool,
     dry_run: bool,
     verbose: int,
 ) -> None:
@@ -188,6 +196,22 @@ def main(
                     "param", sf.entities.get("desc", sf.path.stem.split("_")[-1])
                 )
                 try:
+                    if not force:
+                        expected = diffmap_tsv_path(
+                            output_dir=output_dir,
+                            subject=f"sub-{sub}",
+                            session=f"ses-{ses}",
+                            atlas_name=atlas_name,
+                            software=sf.software or None,
+                            source_entities=sf.entities,
+                        )
+                        if expected.exists():
+                            logger.info(
+                                "%s | Skipping existing diffmap TSV: %s",
+                                log_prefix,
+                                expected.name,
+                            )
+                            continue
                     result = extract_scalar_map(
                         scalar_path=str(sf.path),
                         dseg_path=str(dseg_file.path),
@@ -214,6 +238,7 @@ def main(
                         session=f"ses-{ses}",
                         atlas_name=atlas_name,
                         provenance=provenance,
+                        force=force,
                     )
                 except Exception as e:
                     logger.warning(
@@ -239,6 +264,7 @@ def main(
                             output_dir=output_dir,
                             subject=f"sub-{sub}",
                             session=f"ses-{ses}",
+                            force=force,
                         )
                     except Exception as e:
                         logger.error(

@@ -195,6 +195,7 @@ def build_connectomes(
     output_dir: Path,
     subject: str,
     session: str,
+    force: bool = False,
 ) -> list[ConnectomeResult]:
     """Run all four tck2connectome measures for one tractogram × atlas pair.
 
@@ -269,6 +270,15 @@ def build_connectomes(
             stem = "_".join(stem_parts)
             csv_path = atlas_dir / f"{stem}.csv"
             json_path = atlas_dir / f"{stem}.json"
+
+            if csv_path.exists() and not force:
+                logger.info(
+                    "%s/%s | Skipping existing connectome: %s",
+                    subject,
+                    session,
+                    csv_path.name,
+                )
+                continue
 
             sw = sift_weights if spec["needs_sift_weights"] else None
             cmd = build_tck2connectome_cmd(

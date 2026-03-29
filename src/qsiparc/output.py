@@ -138,6 +138,31 @@ class DiffmapProvenance:
         }
 
 
+def diffmap_tsv_path(
+    output_dir: Path,
+    subject: str,
+    session: str,
+    atlas_name: str,
+    software: str | None = None,
+    source_entities: dict[str, str] | None = None,
+) -> Path:
+    """Return the output path for a diffmap TSV without writing anything.
+
+    Mirrors the path construction logic in :func:`write_diffmap_tsv` so callers
+    can check for an existing file before running expensive computation.
+    """
+    atlas_dir = output_dir / subject / session / "dwi" / f"atlas-{atlas_name}"
+    parts = [subject, session, f"atlas-{atlas_name}"]
+    if software:
+        parts.append(f"software-{software}")
+    if source_entities:
+        for key, val in source_entities.items():
+            if key not in ("sub", "ses"):
+                parts.append(f"{key}-{val}")
+    parts.append("diffmap")
+    return atlas_dir / f"{'_'.join(parts)}.tsv"
+
+
 def write_diffmap_tsv(
     df: pd.DataFrame,
     output_dir: Path,
@@ -147,6 +172,7 @@ def write_diffmap_tsv(
     provenance: DiffmapProvenance | None = None,
     software: str | None = None,
     source_entities: dict[str, str] | None = None,
+    force: bool = False,
 ) -> Path:
     """Write a parcellated diffusion scalar map as a BIDS-derivative TSV.
 
@@ -213,6 +239,9 @@ def write_diffmap_tsv(
     stem = "_".join(parts)
 
     out_path = atlas_dir / f"{stem}.tsv"
+    if out_path.exists() and not force:
+        logger.info("Skipping existing diffmap TSV: %s", out_path)
+        return out_path
     df.to_csv(out_path, sep="\t", index=False, float_format="%.6f")
     logger.info("Wrote diffmap TSV (%d rows): %s", len(df), out_path)
 

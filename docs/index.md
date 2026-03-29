@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/qsiparc_logo.png" alt="qsiparc logo" width="400">
+</p>
+
 # QSIParc
 
 **Parcellated diffusion feature extraction and structural connectome construction from [QSIRecon](https://qsirecon.readthedocs.io/) outputs.**
@@ -39,6 +43,33 @@ For each tractogram × atlas pair, QSIParc runs `tck2connectome` (MRtrix3) with 
 ---
 
 ## Quick start
+
+!!! tip "Recommended: Apptainer"
+    The Apptainer image is the easiest way to get started — no local Python or MRtrix3 install needed. See the [Installation](installation.md#apptainer-recommended) page for build instructions.
+
+    ```bash
+    # Extract all atlases, all subjects
+    apptainer run \
+        --bind /data/qsirecon:/input:ro \
+        --bind /data/qsiparc-out:/output \
+        qsiparc.sif /input /output -v
+
+    # Single subject, single atlas
+    apptainer run \
+        --bind /data/qsirecon:/input:ro \
+        --bind /data/qsiparc-out:/output \
+        qsiparc.sif /input /output \
+        --participant-label sub-001 \
+        --atlas Schaefer2018N100Tian2020S2
+
+    # Dry run: see what would be processed
+    apptainer run \
+        --bind /data/qsirecon:/input:ro \
+        --bind /data/qsiparc-out:/output \
+        qsiparc.sif /input /output --dry-run
+    ```
+
+Alternatively, install directly with pip:
 
 ```bash
 pip install qsiparc

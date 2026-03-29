@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: condaforge/miniforge3:latest
+
+%files
+    pyproject.toml /opt/qsiparc/pyproject.toml
+    README.md /opt/qsiparc/README.md
+    src /opt/qsiparc/src
+
+%post
+    mamba install -y -c conda-forge -c MRtrix3 mrtrix3 libstdcxx-ng python=3.11 && mamba clean -afy
+    pip install --no-cache-dir /opt/qsiparc/
+    tck2connectome --version
+    qsiparc --help
+
+%runscript
+    exec qsiparc "$@"

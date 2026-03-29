@@ -1,0 +1,12 @@
+.git/
+data/
+tests/
+docs/
+notebooks/
+*.egg-info/
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+uv.lock
+mkdocs.yml
+CLAUDE.md

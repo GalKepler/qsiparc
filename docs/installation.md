@@ -1,5 +1,8 @@
 # Installation
 
+!!! tip "Recommended: use the Apptainer image"
+    For most users — especially on HPC clusters — the Apptainer image is the easiest way to run QSIParc. It bundles Python, MRtrix3, and all dependencies into a single portable file with no local install required. See [Apptainer](#apptainer) below.
+
 ## Requirements
 
 - Python ≥ 3.10
@@ -46,6 +49,50 @@ If `tck2connectome` is not on `$PATH`, QSIParc will still run but will skip conn
 | `click` | ≥ 8.0 | CLI framework |
 | `parcellate` | ≥ 0.3.1 | Volumetric parcellation wrapper |
 | `pybids` | ≥ 0.22.0 | BIDS utilities |
+
+## Docker
+
+A `Dockerfile` is provided to build a portable image bundling Python, MRtrix3, and all dependencies.
+
+```bash
+# Build
+docker build -t qsiparc .
+
+# Run
+docker run --rm \
+    -v /data/qsirecon:/input:ro \
+    -v /data/output:/output \
+    qsiparc /input /output
+
+# With filters
+docker run --rm \
+    -v /data/qsirecon:/input:ro \
+    -v /data/output:/output \
+    qsiparc /input /output --participant-label sub-001 --atlas 4S256Parcels
+```
+
+## Apptainer (recommended)
+
+An `apptainer.def` definition file is provided to build a portable SIF image bundling Python, MRtrix3, and all dependencies — no local install required. Apptainer is the standard container runtime on most HPC clusters and is the recommended way to run QSIParc.
+
+```bash
+# Build the image (requires root or --fakeroot on clusters)
+apptainer build qsiparc.sif apptainer.def
+
+# Run
+apptainer run \
+    --bind /data/qsirecon:/input:ro \
+    --bind /data/output:/output \
+    qsiparc.sif /input /output
+
+# With filters
+apptainer run \
+    --bind /data/qsirecon:/input:ro \
+    --bind /data/output:/output \
+    qsiparc.sif /input /output --participant-label sub-001 --atlas 4S256Parcels
+```
+
+Bind your QSIRecon derivatives directory to `/input` and your desired output directory to `/output`. The runscript passes all arguments directly to `qsiparc`.
 
 ## MRtrix3
 
