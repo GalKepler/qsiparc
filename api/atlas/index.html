@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1300,22 +1300,22 @@
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <h3 id="regioninfo"><code>RegionInfo</code><a class="headerlink" href="#regioninfo" title="Permanent link">&para;</a></h3>
 <p>Immutable metadata for a single atlas region.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">RegionInfo</span><span class="p">:</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">index</span><span class="p">:</span> <span class="nb">int</span>          <span class="c1"># Integer label in the dseg NIfTI</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>           <span class="c1"># Human-readable region name</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">hemisphere</span><span class="p">:</span> <span class="nb">str</span>     <span class="c1"># &quot;L&quot;, &quot;R&quot;, or &quot;bilateral&quot;</span>
-</span></code></pre></div>
+<p><code>python
+@dataclass(frozen=True)
+class RegionInfo:
+    index: int          # Integer label in the dseg NIfTI
+    name: str           # Human-readable region name
+    hemisphere: str     # "L", "R", or "bilateral"</code></p>
 <hr />
 <h3 id="atlaslut"><code>AtlasLUT</code><a class="headerlink" href="#atlaslut" title="Permanent link">&para;</a></h3>
 <p>Container for an ordered list of <code>RegionInfo</code> objects. Supports index-based lookup.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">AtlasLUT</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RegionInfo</span><span class="p">]</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span>
-</span></code></pre></div>
+<p><code>python
+class AtlasLUT:
+    regions: list[RegionInfo]
+    atlas_name: str</code></p>
 <p><strong>Constructor:</strong></p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">AtlasLUT</span><span class="p">(</span><span class="n">regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">RegionInfo</span><span class="p">],</span> <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
-</span></code></pre></div>
+<p><code>python
+AtlasLUT(regions: list[RegionInfo], atlas_name: str = "")</code></p>
 <p><strong>Methods:</strong></p>
 <table>
 <thead>
@@ -1366,25 +1366,24 @@
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.atlas</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtlasLUT</span><span class="p">,</span> <span class="n">RegionInfo</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">lut</span> <span class="o">=</span> <span class="n">AtlasLUT</span><span class="p">(</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">regions</span><span class="o">=</span><span class="p">[</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="n">RegionInfo</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LH_Vis_1&quot;</span><span class="p">,</span> <span class="n">hemisphere</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">),</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="n">RegionInfo</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RH_Vis_1&quot;</span><span class="p">,</span> <span class="n">hemisphere</span><span class="o">=</span><span class="s2">&quot;R&quot;</span><span class="p">),</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="p">],</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">atlas_name</span><span class="o">=</span><span class="s2">&quot;Schaefer2018N100Tian2020S2&quot;</span><span class="p">,</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p">)</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lut</span><span class="p">))</span>         <span class="c1"># 2</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">lut</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>      <span class="c1"># &quot;LH_Vis_1&quot;</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">lut</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>      <span class="c1"># [1, 2]</span>
-</span></code></pre></div>
+<p>```python
+from qsiparc.atlas import AtlasLUT, RegionInfo</p>
+<p>lut = AtlasLUT(
+    regions=[
+        RegionInfo(index=1, name="LH_Vis_1", hemisphere="L"),
+        RegionInfo(index=2, name="RH_Vis_1", hemisphere="R"),
+    ],
+    atlas_name="Schaefer2018N100Tian2020S2",
+)</p>
+<p>print(len(lut))         # 2
+print(lut[1].name)      # "LH_Vis_1"
+print(lut.indices)      # [1, 2]
+```</p>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="infer_hemisphere"><code>infer_hemisphere</code><a class="headerlink" href="#infer_hemisphere" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">infer_hemisphere</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
-</span></code></pre></div>
+<p><code>python
+def infer_hemisphere(name: str) -&gt; str</code></p>
 <p>Guess hemisphere from a region name string. Returns <code>"L"</code>, <code>"R"</code>, or <code>"bilateral"</code>.</p>
 <p>Recognized patterns:</p>
 <table>
@@ -1419,17 +1418,17 @@
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.atlas</span><span class="w"> </span><span class="kn">import</span> <span class="n">infer_hemisphere</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">infer_hemisphere</span><span class="p">(</span><span class="s2">&quot;LH_Vis_1&quot;</span><span class="p">)</span>             <span class="c1"># &quot;L&quot;</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">infer_hemisphere</span><span class="p">(</span><span class="s2">&quot;7Networks_RH_Vis_1&quot;</span><span class="p">)</span>   <span class="c1"># &quot;R&quot;</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">infer_hemisphere</span><span class="p">(</span><span class="s2">&quot;Thalamus-Left&quot;</span><span class="p">)</span>        <span class="c1"># &quot;L&quot;</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">infer_hemisphere</span><span class="p">(</span><span class="s2">&quot;Brain-Stem&quot;</span><span class="p">)</span>           <span class="c1"># &quot;bilateral&quot;</span>
-</span></code></pre></div>
+<p>```python
+from qsiparc.atlas import infer_hemisphere</p>
+<p>infer_hemisphere("LH_Vis_1")             # "L"
+infer_hemisphere("7Networks_RH_Vis_1")   # "R"
+infer_hemisphere("Thalamus-Left")        # "L"
+infer_hemisphere("Brain-Stem")           # "bilateral"
+```</p>
 <hr />
 <h3 id="load_lut_from_tsv"><code>load_lut_from_tsv</code><a class="headerlink" href="#load_lut_from_tsv" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_lut_from_tsv</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtlasLUT</span>
-</span></code></pre></div>
+<p><code>python
+def load_lut_from_tsv(path: Path, atlas_name: str = "") -&gt; AtlasLUT</code></p>
 <p>Load a TSV LUT file. Auto-detects index and name columns by name. Falls back to FreeSurfer-style LUT parsing if pandas fails.</p>
 <p>Expected columns (case-insensitive):</p>
 <table>
@@ -1457,18 +1456,18 @@
 <p>Background label (index = 0) is automatically skipped.</p>
 <hr />
 <h3 id="load_lut_from_json"><code>load_lut_from_json</code><a class="headerlink" href="#load_lut_from_json" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_lut_from_json</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtlasLUT</span>
-</span></code></pre></div>
+<p><code>python
+def load_lut_from_json(path: Path, atlas_name: str = "") -&gt; AtlasLUT</code></p>
 <p>Load a JSON LUT file. Accepts two formats:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="nt">&quot;1&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RegionName&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;2&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RegionName&quot;</span><span class="p">}</span>
-</span></code></pre></div>
+<p><code>json
+{"1": "RegionName", "2": "RegionName"}</code></p>
 <p>or:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">[{</span><span class="nt">&quot;index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RegionName&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;hemisphere&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;L&quot;</span><span class="p">},</span><span class="w"> </span><span class="err">...</span><span class="p">]</span>
-</span></code></pre></div>
+<p><code>json
+[{"index": 1, "name": "RegionName", "hemisphere": "L"}, ...]</code></p>
 <hr />
 <h3 id="load_lut_from_dseg"><code>load_lut_from_dseg</code><a class="headerlink" href="#load_lut_from_dseg" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_lut_from_dseg</span><span class="p">(</span><span class="n">dseg_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtlasLUT</span>
-</span></code></pre></div>
+<p><code>python
+def load_lut_from_dseg(dseg_path: Path, atlas_name: str = "") -&gt; AtlasLUT</code></p>
 <p>Fallback: extract unique non-zero integer labels from a dseg NIfTI and assign generic names (<code>region_0001</code>, <code>region_0002</code>, …). All regions get <code>hemisphere = "bilateral"</code>.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>

@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1032,17 +1032,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#merge_extraction_results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        merge_extraction_results
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1252,17 +1241,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#merge_extraction_results" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        merge_extraction_results
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1289,35 +1267,35 @@
 <p>Per-region diffusion scalar extraction using direct numpy masking.</p>
 <h2 id="constants">Constants<a class="headerlink" href="#constants" title="Permanent link">&para;</a></h2>
 <h3 id="output_columns"><code>OUTPUT_COLUMNS</code><a class="headerlink" href="#output_columns" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">OUTPUT_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">&quot;region_index&quot;</span><span class="p">,</span> <span class="s2">&quot;region_name&quot;</span><span class="p">,</span> <span class="s2">&quot;hemisphere&quot;</span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">&quot;scalar&quot;</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;median&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;iqr&quot;</span><span class="p">,</span> <span class="s2">&quot;skewness&quot;</span><span class="p">,</span> <span class="s2">&quot;kurtosis&quot;</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="s2">&quot;n_voxels&quot;</span><span class="p">,</span> <span class="s2">&quot;coverage&quot;</span><span class="p">,</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">]</span>
-</span></code></pre></div>
+<p><code>python
+OUTPUT_COLUMNS = [
+    "region_index", "region_name", "hemisphere",
+    "scalar",
+    "mean", "median", "std", "iqr", "skewness", "kurtosis",
+    "n_voxels", "coverage",
+]</code></p>
 <p>The ordered column list in every <code>ExtractionResult.stats_df</code>.</p>
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <h3 id="extractionresult"><code>ExtractionResult</code><a class="headerlink" href="#extractionresult" title="Permanent link">&para;</a></h3>
 <p>Container for one scalar × one atlas extraction.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExtractionResult</span><span class="p">:</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">scalar_name</span><span class="p">:</span> <span class="nb">str</span>       <span class="c1"># e.g. &quot;FA&quot;</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span>        <span class="c1"># e.g. &quot;Schaefer2018N100Tian2020S2&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">stats_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="c1"># One row per region, columns = OUTPUT_COLUMNS</span>
-</span></code></pre></div>
+<p><code>python
+@dataclass(frozen=True)
+class ExtractionResult:
+    scalar_name: str       # e.g. "FA"
+    atlas_name: str        # e.g. "Schaefer2018N100Tian2020S2"
+    stats_df: pd.DataFrame # One row per region, columns = OUTPUT_COLUMNS</code></p>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="extract_scalar_map"><code>extract_scalar_map</code><a class="headerlink" href="#extract_scalar_map" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">extract_scalar_map</span><span class="p">(</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">scalar_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">dseg_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">lut</span><span class="p">:</span> <span class="n">AtlasLUT</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">scalar_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">stat_tier</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;extended&quot;</span><span class="p">,</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">zero_is_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtractionResult</span>
-</span></code></pre></div>
+<p><code>python
+def extract_scalar_map(
+    scalar_path: str | Path | nib.Nifti1Image,
+    dseg_path: str | Path | nib.Nifti1Image,
+    lut: AtlasLUT,
+    scalar_name: str,
+    stat_tier: str = "extended",
+    zero_is_missing: bool = False,
+) -&gt; ExtractionResult</code></p>
 <p>Extract per-region statistics from a scalar NIfTI map.</p>
 <p><strong>Parameters:</strong></p>
 <table>
@@ -1385,28 +1363,26 @@
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.discover</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_lut_for_dseg</span><span class="p">,</span> <span class="n">discover_dseg_files</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.extract</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_scalar_map</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">qsirecon_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/data/qsirecon&quot;</span><span class="p">)</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">dseg_files</span> <span class="o">=</span> <span class="n">discover_dseg_files</span><span class="p">(</span><span class="n">qsirecon_dir</span><span class="p">,</span> <span class="n">participant_label</span><span class="o">=</span><span class="s2">&quot;sub-001&quot;</span><span class="p">)</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">dseg</span> <span class="o">=</span> <span class="n">dseg_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">lut</span> <span class="o">=</span> <span class="n">load_lut_for_dseg</span><span class="p">(</span><span class="n">dseg</span><span class="p">)</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">result</span> <span class="o">=</span> <span class="n">extract_scalar_map</span><span class="p">(</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">scalar_path</span><span class="o">=</span><span class="s2">&quot;/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/&quot;</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                <span class="s2">&quot;sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz&quot;</span><span class="p">,</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="n">dseg_path</span><span class="o">=</span><span class="n">dseg</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="n">lut</span><span class="o">=</span><span class="n">lut</span><span class="p">,</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="n">scalar_name</span><span class="o">=</span><span class="s2">&quot;FA&quot;</span><span class="p">,</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="n">zero_is_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="p">)</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stats_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="c1">#    region_index  region_name  hemisphere  scalar  mean    ...</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="c1"># 0  1             LH_Vis_1     L           FA      0.4218  ...</span>
-</span></code></pre></div>
+<p>```python
+from pathlib import Path
+from qsiparc.discover import load_lut_for_dseg, discover_dseg_files
+from qsiparc.extract import extract_scalar_map</p>
+<p>qsirecon_dir = Path("/data/qsirecon")
+dseg_files = discover_dseg_files(qsirecon_dir, participant_label="sub-001")
+dseg = dseg_files[0]
+lut = load_lut_for_dseg(dseg)</p>
+<p>result = extract_scalar_map(
+    scalar_path="/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/"
+                "sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz",
+    dseg_path=dseg.path,
+    lut=lut,
+    scalar_name="FA",
+    zero_is_missing=True,
+)</p>
+<p>print(result.stats_df.head())</p>
+<h1 id="region_index-region_name-hemisphere-scalar-mean">region_index  region_name  hemisphere  scalar  mean    ...<a class="headerlink" href="#region_index-region_name-hemisphere-scalar-mean" title="Permanent link">&para;</a></h1>
+<h1 id="0-1-lh_vis_1-l-fa-04218">0  1             LH_Vis_1     L           FA      0.4218  ...<a class="headerlink" href="#0-1-lh_vis_1-l-fa-04218" title="Permanent link">&para;</a></h1>
+<p>```</p>
 <p><strong>Notes:</strong></p>
 <ul>
 <li>Both scalar and dseg must have the same 3D shape. QSIRecon guarantees this when both are in subject T1w space.</li>
@@ -1416,17 +1392,16 @@
 </ul>
 <hr />
 <h3 id="merge_extraction_results"><code>merge_extraction_results</code><a class="headerlink" href="#merge_extraction_results" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">merge_extraction_results</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExtractionResult</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-</span></code></pre></div>
+<p><code>python
+def merge_extraction_results(results: list[ExtractionResult]) -&gt; pd.DataFrame</code></p>
 <p>Stack multiple <code>ExtractionResult</code> objects into a single long-format DataFrame.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.extract</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge_extraction_results</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">fa_result</span> <span class="o">=</span> <span class="n">extract_scalar_map</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">scalar_name</span><span class="o">=</span><span class="s2">&quot;FA&quot;</span><span class="p">)</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">md_result</span> <span class="o">=</span> <span class="n">extract_scalar_map</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">scalar_name</span><span class="o">=</span><span class="s2">&quot;MD&quot;</span><span class="p">)</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="n">combined</span> <span class="o">=</span> <span class="n">merge_extraction_results</span><span class="p">([</span><span class="n">fa_result</span><span class="p">,</span> <span class="n">md_result</span><span class="p">])</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># combined has len(lut) * 2 rows</span>
-</span></code></pre></div>
+<p>```python
+from qsiparc.extract import merge_extraction_results</p>
+<p>fa_result = extract_scalar_map(..., scalar_name="FA")
+md_result = extract_scalar_map(..., scalar_name="MD")</p>
+<p>combined = merge_extraction_results([fa_result, md_result])</p>
+<h1 id="combined-has-lenlut-2-rows">combined has len(lut) * 2 rows<a class="headerlink" href="#combined-has-lenlut-2-rows" title="Permanent link">&para;</a></h1>
+<p>```</p>
 <p>Returns an empty DataFrame if the input list is empty.</p>
 
 
