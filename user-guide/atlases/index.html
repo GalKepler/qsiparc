@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -813,6 +813,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#region-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Region naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hemisphere-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hemisphere inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback-lut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fallback LUT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atlas-output-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atlas output directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-custom-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using a custom atlas
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1144,6 +1205,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#region-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Region naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hemisphere-inference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hemisphere inference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallback-lut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fallback LUT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atlas-output-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atlas output directory
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#using-a-custom-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using a custom atlas
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1219,15 +1341,15 @@
 </tbody>
 </table>
 <p>Availability depends on the QSIRecon workflow configuration used for your dataset. Check which atlases were produced:</p>
-<p><code>bash
-ls &lt;qsirecon_dir&gt;/sub-001/ses-01/dwi/*_dseg.nii.gz</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ls<span class="w"> </span>&lt;qsirecon_dir&gt;/sub-001/ses-01/dwi/*_dseg.nii.gz
+</span></code></pre></div>
 <h2 id="filtering-by-atlas">Filtering by atlas<a class="headerlink" href="#filtering-by-atlas" title="Permanent link">&para;</a></h2>
-<p>```bash</p>
-<h1 id="run-only-for-one-atlas">Run only for one atlas<a class="headerlink" href="#run-only-for-one-atlas" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out --atlas Schaefer2018N100Tian2020S2</p>
-<h1 id="run-for-all-discovered-atlases-default">Run for all discovered atlases (default)<a class="headerlink" href="#run-for-all-discovered-atlases-default" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out
-```</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Run only for one atlas</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--atlas<span class="w"> </span>Schaefer2018N100Tian2020S2
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Run for all discovered atlases (default)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out
+</span></code></pre></div>
 <h2 id="region-naming">Region naming<a class="headerlink" href="#region-naming" title="Permanent link">&para;</a></h2>
 <p>Region names are loaded from the atlas TSV in <code>&lt;qsirecon_dir&gt;/atlases/atlas-{name}/</code>. The <code>region_name</code> column in the output TSV comes directly from this file.</p>
 <h3 id="hemisphere-inference">Hemisphere inference<a class="headerlink" href="#hemisphere-inference" title="Permanent link">&para;</a></h3>
@@ -1268,18 +1390,20 @@ ls &lt;qsirecon_dir&gt;/sub-001/ses-01/dwi/*_dseg.nii.gz</code></p>
 </table>
 <h3 id="fallback-lut">Fallback LUT<a class="headerlink" href="#fallback-lut" title="Permanent link">&para;</a></h3>
 <p>If no TSV is found in the <code>atlases/</code> directory, QSIParc extracts unique integer labels from the NIfTI and assigns generic names:</p>
-<p><code>region_0001, region_0002, ...</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>region_0001, region_0002, ...
+</span></code></pre></div>
 <p>with <code>hemisphere = bilateral</code> for all regions. This is a last resort — meaningful downstream analysis requires proper region names.</p>
 <h2 id="atlas-output-directory">Atlas output directory<a class="headerlink" href="#atlas-output-directory" title="Permanent link">&para;</a></h2>
 <p>Each atlas gets its own subdirectory within the subject/session output:</p>
-<p><code>sub-001/ses-01/dwi/
-├── atlas-Schaefer2018N100Tian2020S2/
-│   ├── ...diffmap.tsv
-│   └── ...connmatrix.csv (×4)
-├── atlas-4S156Parcels/
-│   ├── ...diffmap.tsv
-│   └── ...connmatrix.csv (×4)
-└── ...</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>sub-001/ses-01/dwi/
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── atlas-Schaefer2018N100Tian2020S2/
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>│   ├── ...diffmap.tsv
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│   └── ...connmatrix.csv (×4)
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>├── atlas-4S156Parcels/
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│   ├── ...diffmap.tsv
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│   └── ...connmatrix.csv (×4)
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>└── ...
+</span></code></pre></div>
 <h2 id="using-a-custom-atlas">Using a custom atlas<a class="headerlink" href="#using-a-custom-atlas" title="Permanent link">&para;</a></h2>
 <p>To use a custom atlas:</p>
 <ol>

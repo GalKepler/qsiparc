@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -1298,22 +1298,23 @@
 <h1 id="input-layout">Input Layout<a class="headerlink" href="#input-layout" title="Permanent link">&para;</a></h1>
 <p>QSIParc reads from a QSIRecon derivatives directory. This page describes the expected directory structure and file naming conventions.</p>
 <h2 id="directory-structure">Directory structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
-<p><code>&lt;qsirecon_dir&gt;/
-├── atlases/                                          # (1)
-│   └── atlas-{name}/
-│       └── {name}_dseg.tsv
-├── sub-{label}/
-│   └── ses-{label}/
-│       └── dwi/
-│           └── sub-{label}_ses-{label}_space-T1w_seg-{atlas}_dseg.nii.gz   # (2)
-└── derivatives/
-    └── qsirecon-{workflow}/                          # (3)
-        └── sub-{label}/
-            └── ses-{label}/
-                └── dwi/
-                    ├── sub-{label}_ses-{label}_space-ACPC_param-{scalar}_dwimap.nii.gz  # (4)
-                    ├── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlines.tck.gz  # (5)
-                    └── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlineweights.csv  # (6)</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;qsirecon_dir&gt;/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── atlases/                                          # (1)!
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   └── atlas-{name}/
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│       └── {name}_dseg.tsv
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── sub-{label}/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── ses-{label}/
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       └── dwi/
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│           └── sub-{label}_ses-{label}_space-T1w_seg-{atlas}_dseg.nii.gz   # (2)!
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└── derivatives/
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    └── qsirecon-{workflow}/                          # (3)!
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        └── sub-{label}/
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>            └── ses-{label}/
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                └── dwi/
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                    ├── sub-{label}_ses-{label}_space-ACPC_param-{scalar}_dwimap.nii.gz  # (4)!
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                    ├── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlines.tck.gz  # (5)!
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                    └── sub-{label}_ses-{label}_algo-{algo}_desc-{desc}_streamlineweights.csv  # (6)!
+</span></code></pre></div>
 <ol>
 <li><strong>Atlas LUT directory</strong> — QSIRecon ships TSV label files here. QSIParc uses these for human-readable region names.</li>
 <li><strong>Atlas parcellation (dseg)</strong> — Atlas in subject T1w diffusion space, already warped by QSIRecon.</li>
@@ -1324,11 +1325,13 @@
 </ol>
 <h2 id="atlas-parcellations-dseg">Atlas parcellations (dseg)<a class="headerlink" href="#atlas-parcellations-dseg" title="Permanent link">&para;</a></h2>
 <p>The glob pattern used:</p>
-<p><code>{qsirecon_dir}/{sub-*}/{ses-*}/dwi/*_dseg.nii.gz</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>{qsirecon_dir}/{sub-*}/{ses-*}/dwi/*_dseg.nii.gz
+</span></code></pre></div>
 <p>Files must have a <code>seg-</code> BIDS entity in the filename (e.g. <code>seg-Schaefer2018N100Tian2020S2</code>). Files without this entity are skipped.</p>
 <h3 id="atlas-lut-files">Atlas LUT files<a class="headerlink" href="#atlas-lut-files" title="Permanent link">&para;</a></h3>
 <p>QSIParc looks for the atlas TSV at:</p>
-<p><code>{qsirecon_dir}/atlases/atlas-{atlas_name}/{atlas_name}_dseg.tsv</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>{qsirecon_dir}/atlases/atlas-{atlas_name}/{atlas_name}_dseg.tsv
+</span></code></pre></div>
 <p>If the TSV is not found, QSIParc falls back to extracting unique integer labels from the NIfTI and assigns generic names (<code>region_0001</code>, etc.). Always provide the TSV for meaningful region names.</p>
 <p>Supported LUT formats:</p>
 <table>
@@ -1355,7 +1358,8 @@
 </table>
 <h2 id="diffusion-scalar-maps">Diffusion scalar maps<a class="headerlink" href="#diffusion-scalar-maps" title="Permanent link">&para;</a></h2>
 <p>The glob pattern used:</p>
-<p><code>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_dwimap.nii.gz</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_dwimap.nii.gz
+</span></code></pre></div>
 <p>Files are filtered to ACPC space (<code>space-ACPC</code> entity required). The scalar name is taken from the <code>param</code> entity (e.g. <code>param-FA</code>), falling back to the <code>desc</code> entity.</p>
 <h3 id="supported-scalars">Supported scalars<a class="headerlink" href="#supported-scalars" title="Permanent link">&para;</a></h3>
 <p>QSIParc is not prescriptive about which scalars are present — it discovers whatever QSIRecon produced. Common examples:</p>
@@ -1438,24 +1442,28 @@
 <p>See <a href="../scalars/">Diffusion Scalars</a> for a full description.</p>
 <h2 id="tractography-files">Tractography files<a class="headerlink" href="#tractography-files" title="Permanent link">&para;</a></h2>
 <p>The glob pattern used:</p>
-<p><code>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_streamlines.tck.gz</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_streamlines.tck.gz
+</span></code></pre></div>
 <p>MRtrix3 does not support gzip-compressed tractograms directly; QSIParc decompresses <code>.tck.gz</code> to a temporary <code>.tck</code> before calling <code>tck2connectome</code>, then cleans up.</p>
 <h2 id="sift2-weight-files">SIFT2 weight files<a class="headerlink" href="#sift2-weight-files" title="Permanent link">&para;</a></h2>
 <p>The glob pattern used:</p>
-<p><code>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_streamlineweights.csv</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>{qsirecon_dir}/derivatives/qsirecon-*/{sub}/{ses}/dwi/*_streamlineweights.csv
+</span></code></pre></div>
 <p>QSIParc looks for SIFT2 weight files adjacent to each tractogram (same directory). The two SIFT2-weighted connectome measures (<code>sift_invnodevol_radius2_count</code> and <code>sift_radius2_count</code>) are skipped for a given tractogram if no weight file is found nearby.</p>
 <h2 id="filtering-inputs">Filtering inputs<a class="headerlink" href="#filtering-inputs" title="Permanent link">&para;</a></h2>
 <p>Use CLI flags to restrict processing:</p>
-<p>```bash</p>
-<h1 id="single-subject">Single subject<a class="headerlink" href="#single-subject" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out --participant-label sub-001</p>
-<h1 id="single-session">Single session<a class="headerlink" href="#single-session" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out --session-label ses-01</p>
-<h1 id="single-atlas">Single atlas<a class="headerlink" href="#single-atlas" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out --atlas Schaefer2018N100Tian2020S2</p>
-<h1 id="specific-scalars-only">Specific scalars only<a class="headerlink" href="#specific-scalars-only" title="Permanent link">&para;</a></h1>
-<p>qsiparc /data/qsirecon /out --scalars FA MD ICVF
-```</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Single subject</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--participant-label<span class="w"> </span>sub-001
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Single session</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--session-label<span class="w"> </span>ses-01
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Single atlas</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--atlas<span class="w"> </span>Schaefer2018N100Tian2020S2
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Specific scalars only</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--scalars<span class="w"> </span>FA<span class="w"> </span>MD<span class="w"> </span>ICVF
+</span></code></pre></div>
 <p>Labels can be specified with or without the BIDS prefix (<code>sub-001</code> or <code>001</code>, <code>ses-01</code> or <code>01</code>).</p>
 
 

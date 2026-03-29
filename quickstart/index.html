@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -589,6 +589,28 @@
     <span class="md-ellipsis">
       
         4. Check the output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-run-on-all-subjects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Run on all subjects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common options
       
     </span>
   </a>
@@ -1166,6 +1188,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#5-run-on-all-subjects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Run on all subjects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common options
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1187,74 +1231,79 @@
 <p>This guide walks through a typical QSIParc run from start to finish.</p>
 <h2 id="1-confirm-your-qsirecon-output-looks-right">1. Confirm your QSIRecon output looks right<a class="headerlink" href="#1-confirm-your-qsirecon-output-looks-right" title="Permanent link">&para;</a></h2>
 <p>QSIParc expects a QSIRecon derivatives directory with the standard BIDS layout:</p>
-<p><code>/data/qsirecon/
-├── atlases/
-│   └── atlas-Schaefer2018N100Tian2020S2/
-│       └── Schaefer2018N100Tian2020S2_dseg.tsv
-├── sub-001/
-│   └── ses-01/
-│       └── dwi/
-│           ├── sub-001_ses-01_space-T1w_seg-Schaefer2018N100Tian2020S2_dseg.nii.gz
-│           ...
-└── derivatives/
-    └── qsirecon-AMICONODDI/
-        └── sub-001/
-            └── ses-01/
-                └── dwi/
-                    ├── sub-001_ses-01_space-ACPC_param-ICVF_dwimap.nii.gz
-                    ├── sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz
-                    └── sub-001_ses-01_algo-iFOD2_desc-iFOD2-1M_streamlines.tck.gz</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/data/qsirecon/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── atlases/
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   └── atlas-Schaefer2018N100Tian2020S2/
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│       └── Schaefer2018N100Tian2020S2_dseg.tsv
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── sub-001/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── ses-01/
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│       └── dwi/
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│           ├── sub-001_ses-01_space-T1w_seg-Schaefer2018N100Tian2020S2_dseg.nii.gz
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│           ...
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>└── derivatives/
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    └── qsirecon-AMICONODDI/
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        └── sub-001/
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>            └── ses-01/
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                └── dwi/
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                    ├── sub-001_ses-01_space-ACPC_param-ICVF_dwimap.nii.gz
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                    ├── sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                    └── sub-001_ses-01_algo-iFOD2_desc-iFOD2-1M_streamlines.tck.gz
+</span></code></pre></div>
 <p>See <a href="../user-guide/inputs/">Input Layout</a> for the full specification.</p>
 <h2 id="2-dry-run-first">2. Dry run first<a class="headerlink" href="#2-dry-run-first" title="Permanent link">&para;</a></h2>
 <p>Always start with <code>--dry-run</code> to confirm QSIParc can find your files:</p>
-<p><code>bash
-qsiparc /data/qsirecon /data/qsiparc-out --dry-run</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/data/qsiparc-out<span class="w"> </span>--dry-run
+</span></code></pre></div>
 <p>Example output:
-<code>Found 4 atlas parcellation(s):
-  sub-001/ses-01 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-001/ses-01/dwi/...
-  sub-001/ses-02 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-001/ses-02/dwi/...
-  sub-002/ses-01 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-002/ses-01/dwi/...
-  sub-002/ses-02 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-002/ses-02/dwi/...</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Found 4 atlas parcellation(s):
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  sub-001/ses-01 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-001/ses-01/dwi/...
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  sub-001/ses-02 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-001/ses-02/dwi/...
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  sub-002/ses-01 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-002/ses-01/dwi/...
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  sub-002/ses-02 atlas=Schaefer2018N100Tian2020S2  lut=yes → /data/qsirecon/sub-002/ses-02/dwi/...
+</span></code></pre></div></p>
 <p>If <code>lut=no</code> appears, QSIParc will fall back to extracting region labels directly from the NIfTI — region names will be generic (<code>region_0001</code>, etc.). Place the atlas TSV in <code>&lt;qsirecon_dir&gt;/atlases/atlas-&lt;name&gt;/</code> to fix this.</p>
 <h2 id="3-run-on-a-single-subject-first">3. Run on a single subject first<a class="headerlink" href="#3-run-on-a-single-subject-first" title="Permanent link">&para;</a></h2>
-<p><code>bash
-qsiparc /data/qsirecon /data/qsiparc-out \
-    --participant-label sub-001 \
-    --session-label ses-01 \
-    -v</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/data/qsiparc-out<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>--participant-label<span class="w"> </span>sub-001<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--session-label<span class="w"> </span>ses-01<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>-v
+</span></code></pre></div>
 <p>The <code>-v</code> flag enables INFO-level logging so you can see what is happening:
-```
-10:23:01 [INFO   ] qsiparc.discover | Discovered 1 dseg files (filters: participant=sub-001, session=ses-01, atlas=None)
-10:23:01 [INFO   ] qsiparc.discover | Discovered 12 scalar maps for sub-001/ses-01 (filter: None)
-10:23:02 [INFO   ] qsiparc.extract  | Extracted FA for 100 regions (atlas=Schaefer2018N100Tian2020S2)
-...
-10:23:15 [INFO   ] qsiparc.cli      | sub-001/ses-01/atlas-Schaefer2018N100Tian2020S2 | Done</p>
-<p>QSIParc complete: 1 succeeded, 0 failed out of 1 parcellations.
-```</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>10:23:01 [INFO   ] qsiparc.discover | Discovered 1 dseg files (filters: participant=sub-001, session=ses-01, atlas=None)
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>10:23:01 [INFO   ] qsiparc.discover | Discovered 12 scalar maps for sub-001/ses-01 (filter: None)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>10:23:02 [INFO   ] qsiparc.extract  | Extracted FA for 100 regions (atlas=Schaefer2018N100Tian2020S2)
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>...
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>10:23:15 [INFO   ] qsiparc.cli      | sub-001/ses-01/atlas-Schaefer2018N100Tian2020S2 | Done
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>QSIParc complete: 1 succeeded, 0 failed out of 1 parcellations.
+</span></code></pre></div></p>
 <h2 id="4-check-the-output">4. Check the output<a class="headerlink" href="#4-check-the-output" title="Permanent link">&para;</a></h2>
-<p><code>bash
-ls /data/qsiparc-out/sub-001/ses-01/dwi/atlas-Schaefer2018N100Tian2020S2/</code></p>
-<p><code>sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_software-AMICONODDI_...diffmap.tsv
-sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_software-AMICONODDI_...diffmap.json
-sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_...desc-sift_invnodevol_radius2_count_connmatrix.csv
-sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_...desc-sift_invnodevol_radius2_count_connmatrix.json
-... (3 more connmatrix pairs)</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>ls<span class="w"> </span>/data/qsiparc-out/sub-001/ses-01/dwi/atlas-Schaefer2018N100Tian2020S2/
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_software-AMICONODDI_...diffmap.tsv
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_software-AMICONODDI_...diffmap.json
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_...desc-sift_invnodevol_radius2_count_connmatrix.csv
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>sub-001_ses-01_atlas-Schaefer2018N100Tian2020S2_...desc-sift_invnodevol_radius2_count_connmatrix.json
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>... (3 more connmatrix pairs)
+</span></code></pre></div>
 <p>Load the diffusion scalar TSV in Python:</p>
-<p>```python
-import pandas as pd</p>
-<p>df = pd.read_csv(
-    "qsiparc-out/sub-001/ses-01/dwi/atlas-Schaefer2018N100Tian2020S2/...diffmap.tsv",
-    sep="\t",
-)</p>
-<h1 id="filter-to-fa-in-left-hemisphere">Filter to FA in left hemisphere<a class="headerlink" href="#filter-to-fa-in-left-hemisphere" title="Permanent link">&para;</a></h1>
-<p>fa_left = df[(df["scalar"] == "FA") &amp; (df["hemisphere"] == "L")]
-print(fa_left[["region_name", "mean", "std", "n_voxels"]].head())
-```</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="s2">&quot;qsiparc-out/sub-001/ses-01/dwi/atlas-Schaefer2018N100Tian2020S2/...diffmap.tsv&quot;</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">)</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># Filter to FA in left hemisphere</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">fa_left</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FA&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;hemisphere&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">)]</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">fa_left</span><span class="p">[[</span><span class="s2">&quot;region_name&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;n_voxels&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</span></code></pre></div>
 <h2 id="5-run-on-all-subjects">5. Run on all subjects<a class="headerlink" href="#5-run-on-all-subjects" title="Permanent link">&para;</a></h2>
-<p><code>bash
-qsiparc /data/qsirecon /data/qsiparc-out -v</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/data/qsiparc-out<span class="w"> </span>-v
+</span></code></pre></div>
 <p>QSIParc processes subjects in parallel (one per atlas parcellation found). Progress is logged per subject/session/atlas. The final summary line tells you how many succeeded:</p>
-<p><code>QSIParc complete: 48 succeeded, 0 failed out of 48 parcellations.</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>QSIParc complete: 48 succeeded, 0 failed out of 48 parcellations.
+</span></code></pre></div>
 <p>Exit code <code>0</code> means all succeeded. <code>1</code> means partial failure (some subjects had errors). <code>2</code> means total failure.</p>
 <h2 id="common-options">Common options<a class="headerlink" href="#common-options" title="Permanent link">&para;</a></h2>
 <table>

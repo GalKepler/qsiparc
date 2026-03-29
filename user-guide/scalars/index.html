@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -1487,8 +1487,8 @@
 <h2 id="zero-valued-voxels">Zero-valued voxels<a class="headerlink" href="#zero-valued-voxels" title="Permanent link">&para;</a></h2>
 <p>Some QSIRecon workflows produce scalar maps where background voxels outside the brain mask have value <code>0.0</code> rather than <code>NaN</code>. These zeros can corrupt statistics for regions near the brain boundary.</p>
 <p>Use <code>--zero-is-missing</code> to treat <code>0.0</code> as missing data:</p>
-<p><code>bash
-qsiparc /data/qsirecon /out --zero-is-missing</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>qsiparc<span class="w"> </span>/data/qsirecon<span class="w"> </span>/out<span class="w"> </span>--zero-is-missing
+</span></code></pre></div>
 <p>This sets all <code>0.0</code> voxels to <code>NaN</code> before extraction. Check whether this is appropriate for your data — some scalars (e.g. MD) legitimately have near-zero values in white matter.</p>
 <h2 id="coverage-and-missing-data">Coverage and missing data<a class="headerlink" href="#coverage-and-missing-data" title="Permanent link">&para;</a></h2>
 <p>The <code>coverage</code> column indicates what fraction of the atlas-defined region has valid signal:</p>
@@ -1500,8 +1500,8 @@ qsiparc /data/qsirecon /out --zero-is-missing</code></p>
 <div class="admonition warning">
 <p class="admonition-title">Regions with zero coverage</p>
 <p>Rows with <code>coverage = 0.0</code> will have <code>NaN</code> for all statistics. Filter these out before analysis:
-<code>python
-df = df[df["coverage"] &gt; 0]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;coverage&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+</span></code></pre></div></p>
 </div>
 <h2 id="4d-scalar-maps">4D scalar maps<a class="headerlink" href="#4d-scalar-maps" title="Permanent link">&para;</a></h2>
 <p>If a scalar NIfTI is 4D (multiple volumes), QSIParc uses only the first volume and logs a warning. This is a fallback — verify that the input file is correct.</p>

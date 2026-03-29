@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -959,6 +959,83 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#find_atlas_lut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_atlas_lut
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_lut_for_dseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_lut_for_dseg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_dseg_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_dseg_files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_scalar_maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_scalar_maps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_tractography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_tractography
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_sift_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_sift_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_participant_label-sanitize_session_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sanitize_participant_label / sanitize_session_label
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1207,6 +1284,83 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#find_atlas_lut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        find_atlas_lut
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_lut_for_dseg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_lut_for_dseg
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_dseg_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_dseg_files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_scalar_maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_scalar_maps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_tractography" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_tractography
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discover_sift_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        discover_sift_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sanitize_participant_label-sanitize_session_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sanitize_participant_label / sanitize_session_label
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1234,11 +1388,11 @@
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <h3 id="bidsfile"><code>BIDSFile</code><a class="headerlink" href="#bidsfile" title="Permanent link">&para;</a></h3>
 <p>A discovered file with parsed BIDS entities.</p>
-<p><code>python
-@dataclass(frozen=True)
-class BIDSFile:
-    path: Path
-    entities: dict[str, str]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">BIDSFile</span><span class="p">:</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">entities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</span></code></pre></div>
 <p><strong>Properties:</strong></p>
 <table>
 <thead>
@@ -1272,27 +1426,28 @@ class BIDSFile:
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<p>```python
-from qsiparc.discover import BIDSFile
-from pathlib import Path</p>
-<p>f = BIDSFile(
-    path=Path("/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/"
-              "sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz"),
-    entities={"sub": "001", "ses": "01", "space": "ACPC", "param": "FA"},
-)</p>
-<p>print(f.subject)   # "001"
-print(f.software)  # "AMICONODDI"
-```</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.discover</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIDSFile</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">f</span> <span class="o">=</span> <span class="n">BIDSFile</span><span class="p">(</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/&quot;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>              <span class="s2">&quot;sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz&quot;</span><span class="p">),</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">entities</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">:</span> <span class="s2">&quot;01&quot;</span><span class="p">,</span> <span class="s2">&quot;space&quot;</span><span class="p">:</span> <span class="s2">&quot;ACPC&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="s2">&quot;FA&quot;</span><span class="p">},</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">)</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>   <span class="c1"># &quot;001&quot;</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">software</span><span class="p">)</span>  <span class="c1"># &quot;AMICONODDI&quot;</span>
+</span></code></pre></div>
 <hr />
 <h3 id="atlasdsegfile"><code>AtlasDsegFile</code><a class="headerlink" href="#atlasdsegfile" title="Permanent link">&para;</a></h3>
 <p>A subject-space atlas dseg NIfTI paired with its atlas LUT.</p>
-<p><code>python
-@dataclass(frozen=True)
-class AtlasDsegFile:
-    path: Path
-    entities: dict[str, str]
-    atlas_name: str
-    lut_path: Path | None</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">AtlasDsegFile</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">path</span><span class="p">:</span> <span class="n">Path</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">entities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">lut_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span>
+</span></code></pre></div>
 <p><strong>Properties:</strong></p>
 <table>
 <thead>
@@ -1318,8 +1473,8 @@ class AtlasDsegFile:
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="parse_entities"><code>parse_entities</code><a class="headerlink" href="#parse_entities" title="Permanent link">&para;</a></h3>
-<p><code>python
-def parse_entities(filename: str) -&gt; dict[str, str]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">parse_entities</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+</span></code></pre></div>
 <p>Extract BIDS key-value pairs from a filename stem using regex.</p>
 <p><strong>Parameters:</strong></p>
 <table>
@@ -1340,33 +1495,33 @@ def parse_entities(filename: str) -&gt; dict[str, str]</code></p>
 </table>
 <p><strong>Returns:</strong> <code>dict[str, str]</code> — mapping of entity keys to values.</p>
 <p><strong>Example:</strong></p>
-<p>```python
-from qsiparc.discover import parse_entities</p>
-<p>entities = parse_entities("sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz")</p>
-<h1 id="sub-001-ses-01-space-acpc-param-fa">{"sub": "001", "ses": "01", "space": "ACPC", "param": "FA"}<a class="headerlink" href="#sub-001-ses-01-space-acpc-param-fa" title="Permanent link">&para;</a></h1>
-<p>```</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">qsiparc.discover</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_entities</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">entities</span> <span class="o">=</span> <span class="n">parse_entities</span><span class="p">(</span><span class="s2">&quot;sub-001_ses-01_space-ACPC_param-FA_dwimap.nii.gz&quot;</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># {&quot;sub&quot;: &quot;001&quot;, &quot;ses&quot;: &quot;01&quot;, &quot;space&quot;: &quot;ACPC&quot;, &quot;param&quot;: &quot;FA&quot;}</span>
+</span></code></pre></div>
 <hr />
 <h3 id="find_atlas_lut"><code>find_atlas_lut</code><a class="headerlink" href="#find_atlas_lut" title="Permanent link">&para;</a></h3>
-<p><code>python
-def find_atlas_lut(qsirecon_dir: Path, atlas_name: str) -&gt; Path | None</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">find_atlas_lut</span><span class="p">(</span><span class="n">qsirecon_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">atlas_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span>
+</span></code></pre></div>
 <p>Find the LUT TSV for a named atlas in the QSIRecon <code>atlases/</code> directory.</p>
 <p>Looks for: <code>{qsirecon_dir}/atlases/atlas-{atlas_name}/*_dseg.tsv</code></p>
 <p><strong>Returns:</strong> Path to the first matching TSV, or <code>None</code> if not found.</p>
 <hr />
 <h3 id="load_lut_for_dseg"><code>load_lut_for_dseg</code><a class="headerlink" href="#load_lut_for_dseg" title="Permanent link">&para;</a></h3>
-<p><code>python
-def load_lut_for_dseg(dseg_file: AtlasDsegFile) -&gt; AtlasLUT</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_lut_for_dseg</span><span class="p">(</span><span class="n">dseg_file</span><span class="p">:</span> <span class="n">AtlasDsegFile</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtlasLUT</span>
+</span></code></pre></div>
 <p>Load the atlas LUT for a discovered dseg file.</p>
 <p>Uses the paired <code>lut_path</code> if available; falls back to extracting unique labels from the NIfTI when <code>lut_path</code> is <code>None</code>.</p>
 <hr />
 <h3 id="discover_dseg_files"><code>discover_dseg_files</code><a class="headerlink" href="#discover_dseg_files" title="Permanent link">&para;</a></h3>
-<p><code>python
-def discover_dseg_files(
-    qsirecon_dir: Path,
-    participant_label: str | None = None,
-    session_label: str | None = None,
-    atlas: str | None = None,
-) -&gt; list[AtlasDsegFile]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">discover_dseg_files</span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">qsirecon_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">participant_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">session_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AtlasDsegFile</span><span class="p">]</span>
+</span></code></pre></div>
 <p>Find atlas parcellation NIfTIs in a QSIRecon derivatives directory.</p>
 <p>Glob pattern: <code>{sub_pattern}/{ses_pattern}/dwi/*_dseg.nii.gz</code></p>
 <p>Files without a <code>seg-</code> entity in the filename are skipped.</p>
@@ -1405,13 +1560,13 @@ def discover_dseg_files(
 <p><strong>Returns:</strong> <code>list[AtlasDsegFile]</code> sorted by path.</p>
 <hr />
 <h3 id="discover_scalar_maps"><code>discover_scalar_maps</code><a class="headerlink" href="#discover_scalar_maps" title="Permanent link">&para;</a></h3>
-<p><code>python
-def discover_scalar_maps(
-    qsirecon_dir: Path,
-    subject: str,
-    session: str,
-    scalars: list[str] | None = None,
-) -&gt; list[BIDSFile]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">discover_scalar_maps</span><span class="p">(</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">qsirecon_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">scalars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BIDSFile</span><span class="p">]</span>
+</span></code></pre></div>
 <p>Find diffusion scalar map NIfTIs for a given subject/session.</p>
 <p>Searches all <code>derivatives/qsirecon-*</code> subdirectories for <code>*_dwimap.nii.gz</code> files with <code>space-ACPC</code>. Files with <code>_dseg</code> in the name are skipped.</p>
 <p><strong>Parameters:</strong></p>
@@ -1448,32 +1603,32 @@ def discover_scalar_maps(
 </table>
 <hr />
 <h3 id="discover_tractography"><code>discover_tractography</code><a class="headerlink" href="#discover_tractography" title="Permanent link">&para;</a></h3>
-<p><code>python
-def discover_tractography(
-    qsirecon_dir: Path,
-    subject: str,
-    session: str,
-) -&gt; list[BIDSFile]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">discover_tractography</span><span class="p">(</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">qsirecon_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BIDSFile</span><span class="p">]</span>
+</span></code></pre></div>
 <p>Find tractography files (<code>*_streamlines.tck.gz</code>) for a given subject/session.</p>
 <hr />
 <h3 id="discover_sift_weights"><code>discover_sift_weights</code><a class="headerlink" href="#discover_sift_weights" title="Permanent link">&para;</a></h3>
-<p><code>python
-def discover_sift_weights(
-    qsirecon_dir: Path,
-    subject: str,
-    session: str,
-) -&gt; list[BIDSFile]</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">discover_sift_weights</span><span class="p">(</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">qsirecon_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">session</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">BIDSFile</span><span class="p">]</span>
+</span></code></pre></div>
 <p>Find SIFT2 streamline weight files (<code>*_streamlineweights.csv</code>) for a given subject/session.</p>
 <hr />
 <h3 id="sanitize_participant_label-sanitize_session_label"><code>sanitize_participant_label</code> / <code>sanitize_session_label</code><a class="headerlink" href="#sanitize_participant_label-sanitize_session_label" title="Permanent link">&para;</a></h3>
-<p><code>python
-def sanitize_participant_label(participant_label: str) -&gt; str
-def sanitize_session_label(session_label: str) -&gt; str</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">sanitize_participant_label</span><span class="p">(</span><span class="n">participant_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">sanitize_session_label</span><span class="p">(</span><span class="n">session_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
 <p>Ensure BIDS prefix is present. Idempotent — safe to call on labels with or without the prefix.</p>
-<p><code>python
-sanitize_participant_label("001")      # "sub-001"
-sanitize_participant_label("sub-001")  # "sub-001"
-sanitize_session_label("01")           # "ses-01"</code></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">sanitize_participant_label</span><span class="p">(</span><span class="s2">&quot;001&quot;</span><span class="p">)</span>      <span class="c1"># &quot;sub-001&quot;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">sanitize_participant_label</span><span class="p">(</span><span class="s2">&quot;sub-001&quot;</span><span class="p">)</span>  <span class="c1"># &quot;sub-001&quot;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">sanitize_session_label</span><span class="p">(</span><span class="s2">&quot;01&quot;</span><span class="p">)</span>           <span class="c1"># &quot;ses-01&quot;</span>
+</span></code></pre></div>
 
 
 

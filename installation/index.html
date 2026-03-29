@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -583,6 +583,28 @@
     <span class="md-ellipsis">
       
         Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apptainer-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apptainer (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mrtrix3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRtrix3
       
     </span>
   </a>
@@ -1210,6 +1232,28 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#apptainer-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apptainer (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mrtrix3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MRtrix3
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1238,20 +1282,20 @@
 <li><a href="https://www.mrtrix.org/">MRtrix3</a> — required for connectome construction only; scalar extraction works without it</li>
 </ul>
 <h2 id="install-from-source">Install from source<a class="headerlink" href="#install-from-source" title="Permanent link">&para;</a></h2>
-<p><code>bash
-git clone https://github.com/snbb/qsiparc.git
-cd qsiparc
-pip install -e .</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/snbb/qsiparc.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>qsiparc
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</span></code></pre></div>
 <h2 id="install-with-development-dependencies">Install with development dependencies<a class="headerlink" href="#install-with-development-dependencies" title="Permanent link">&para;</a></h2>
-<p><code>bash
-pip install -e ".[dev]"</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</span></code></pre></div>
 <p>This adds <code>pytest</code>, <code>ruff</code>, and <code>mypy</code> for testing and linting.</p>
 <h2 id="verify-installation">Verify installation<a class="headerlink" href="#verify-installation" title="Permanent link">&para;</a></h2>
-<p><code>bash
-qsiparc --help</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>qsiparc<span class="w"> </span>--help
+</span></code></pre></div>
 <p>You should see the command-line help output. To also verify MRtrix3 is available for connectome construction:</p>
-<p><code>bash
-which tck2connectome</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>which<span class="w"> </span>tck2connectome
+</span></code></pre></div>
 <p>If <code>tck2connectome</code> is not on <code>$PATH</code>, QSIParc will still run but will skip connectome construction with a warning.</p>
 <h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>
 <table>
@@ -1302,36 +1346,38 @@ which tck2connectome</code></p>
 </table>
 <h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
 <p>A <code>Dockerfile</code> is provided to build a portable image bundling Python, MRtrix3, and all dependencies.</p>
-<p>```bash</p>
-<h1 id="build">Build<a class="headerlink" href="#build" title="Permanent link">&para;</a></h1>
-<p>docker build -t qsiparc .</p>
-<h1 id="run">Run<a class="headerlink" href="#run" title="Permanent link">&para;</a></h1>
-<p>docker run --rm \
-    -v /data/qsirecon:/input:ro \
-    -v /data/output:/output \
-    qsiparc /input /output</p>
-<h1 id="with-filters">With filters<a class="headerlink" href="#with-filters" title="Permanent link">&para;</a></h1>
-<p>docker run --rm \
-    -v /data/qsirecon:/input:ro \
-    -v /data/output:/output \
-    qsiparc /input /output --participant-label sub-001 --atlas 4S256Parcels
-```</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Build</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>qsiparc<span class="w"> </span>.
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Run</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>-v<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span>-v<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span>qsiparc<span class="w"> </span>/input<span class="w"> </span>/output
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># With filters</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span>-v<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span>-v<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span>qsiparc<span class="w"> </span>/input<span class="w"> </span>/output<span class="w"> </span>--participant-label<span class="w"> </span>sub-001<span class="w"> </span>--atlas<span class="w"> </span>4S256Parcels
+</span></code></pre></div>
 <h2 id="apptainer-recommended">Apptainer (recommended)<a class="headerlink" href="#apptainer-recommended" title="Permanent link">&para;</a></h2>
 <p>An <code>apptainer.def</code> definition file is provided to build a portable SIF image bundling Python, MRtrix3, and all dependencies — no local install required. Apptainer is the standard container runtime on most HPC clusters and is the recommended way to run QSIParc.</p>
-<p>```bash</p>
-<h1 id="build-the-image-requires-root-or-fakeroot-on-clusters">Build the image (requires root or --fakeroot on clusters)<a class="headerlink" href="#build-the-image-requires-root-or-fakeroot-on-clusters" title="Permanent link">&para;</a></h1>
-<p>apptainer build qsiparc.sif apptainer.def</p>
-<h1 id="run_1">Run<a class="headerlink" href="#run_1" title="Permanent link">&para;</a></h1>
-<p>apptainer run \
-    --bind /data/qsirecon:/input:ro \
-    --bind /data/output:/output \
-    qsiparc.sif /input /output</p>
-<h1 id="with-filters_1">With filters<a class="headerlink" href="#with-filters_1" title="Permanent link">&para;</a></h1>
-<p>apptainer run \
-    --bind /data/qsirecon:/input:ro \
-    --bind /data/output:/output \
-    qsiparc.sif /input /output --participant-label sub-001 --atlas 4S256Parcels
-```</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Build the image (requires root or --fakeroot on clusters)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>apptainer<span class="w"> </span>build<span class="w"> </span>qsiparc.sif<span class="w"> </span>apptainer.def
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Run</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>apptainer<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span>--bind<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span>--bind<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span>qsiparc.sif<span class="w"> </span>/input<span class="w"> </span>/output
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># With filters</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>apptainer<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span>--bind<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span>--bind<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span>qsiparc.sif<span class="w"> </span>/input<span class="w"> </span>/output<span class="w"> </span>--participant-label<span class="w"> </span>sub-001<span class="w"> </span>--atlas<span class="w"> </span>4S256Parcels
+</span></code></pre></div>
 <p>Bind your QSIRecon derivatives directory to <code>/input</code> and your desired output directory to <code>/output</code>. The runscript passes all arguments directly to <code>qsiparc</code>.</p>
 <h2 id="mrtrix3">MRtrix3<a class="headerlink" href="#mrtrix3" title="Permanent link">&para;</a></h2>
 <p>MRtrix3 is an external dependency for connectome construction. Install it following the <a href="https://www.mrtrix.org/download/">official instructions</a>.</p>
@@ -1339,8 +1385,8 @@ which tck2connectome</code></p>
 <div class="admonition note">
 <p class="admonition-title">Conda environments</p>
 <p>If you use a conda environment, MRtrix3 can be installed via:
-<code>bash
-conda install -c conda-forge mrtrix3</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mrtrix3
+</span></code></pre></div></p>
 </div>
 
 

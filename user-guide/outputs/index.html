@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -779,6 +779,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#diffusion-scalar-json-sidecar-_diffmapjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diffusion scalar JSON sidecar (*_diffmap.json)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-matrix-csv-_connmatrixcsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity matrix CSV (*_connmatrix.csv)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectivity matrix CSV (*_connmatrix.csv)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-in-python_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading in Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#four-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Four measures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-matrix-json-sidecar-_connmatrixjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity matrix JSON sidecar (*_connmatrix.json)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1244,6 +1305,67 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#diffusion-scalar-json-sidecar-_diffmapjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diffusion scalar JSON sidecar (*_diffmap.json)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-matrix-csv-_connmatrixcsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity matrix CSV (*_connmatrix.csv)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connectivity matrix CSV (*_connmatrix.csv)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-in-python_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading in Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#four-measures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Four measures
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connectivity-matrix-json-sidecar-_connmatrixjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connectivity matrix JSON sidecar (*_connmatrix.json)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1264,22 +1386,23 @@
 <h1 id="output-format">Output Format<a class="headerlink" href="#output-format" title="Permanent link">&para;</a></h1>
 <p>QSIParc writes outputs in a BIDS-derivative layout. This page describes every file type produced.</p>
 <h2 id="directory-structure">Directory structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
-<p><code>&lt;output_dir&gt;/
-├── dataset_description.json                          # (1)
-└── sub-{label}/
-    └── ses-{label}/
-        └── dwi/
-            └── atlas-{atlas_name}/
-                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.tsv   # (2)
-                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.json  # (3)
-                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.csv   # (4)
-                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.json
-                ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.csv
-                ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.json
-                ├── sub-{label}_ses-{label}_..._desc-radius2_count_connmatrix.csv
-                ├── sub-{label}_ses-{label}_..._desc-radius2_count_connmatrix.json
-                ├── sub-{label}_ses-{label}_..._desc-sift_radius2_count_connmatrix.csv
-                └── sub-{label}_ses-{label}_..._desc-sift_radius2_count_connmatrix.json</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&lt;output_dir&gt;/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── dataset_description.json                          # (1)!
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>└── sub-{label}/
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    └── ses-{label}/
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        └── dwi/
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>            └── atlas-{atlas_name}/
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.tsv   # (2)!
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                ├── sub-{label}_ses-{label}_atlas-{atlas_name}_..._diffmap.json  # (3)!
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.csv   # (4)!
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                ├── sub-{label}_ses-{label}_..._desc-sift_invnodevol_radius2_count_connmatrix.json
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.csv
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                ├── sub-{label}_ses-{label}_..._desc-radius2_meanlength_connmatrix.json
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                ├── sub-{label}_ses-{label}_..._desc-radius2_count_connmatrix.csv
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                ├── sub-{label}_ses-{label}_..._desc-radius2_count_connmatrix.json
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                ├── sub-{label}_ses-{label}_..._desc-sift_radius2_count_connmatrix.csv
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                └── sub-{label}_ses-{label}_..._desc-sift_radius2_count_connmatrix.json
+</span></code></pre></div>
 <ol>
 <li><strong>Root-level BIDS dataset description</strong></li>
 <li><strong>Diffusion scalar TSV</strong> — long-format, one row per region × scalar</li>
@@ -1288,23 +1411,24 @@
 </ol>
 <h2 id="dataset_descriptionjson">dataset_description.json<a class="headerlink" href="#dataset_descriptionjson" title="Permanent link">&para;</a></h2>
 <p>Written once at the root of the output directory. Follows BIDS 1.9.0 derivative format:</p>
-<p><code>json
-{
-  "Name": "QSIParc — Parcellated Diffusion Features",
-  "BIDSVersion": "1.9.0",
-  "DatasetType": "derivative",
-  "GeneratedBy": [
-    {
-      "Name": "QSIParc",
-      "Description": "Parcellated diffusion scalar extraction and connectivity repackaging from QSIRecon outputs.",
-      "CodeURL": "https://github.com/snbb/qsiparc"
-    }
-  ]
-}</code></p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QSIParc — Parcellated Diffusion Features&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;BIDSVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.9.0&quot;</span><span class="p">,</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="nt">&quot;DatasetType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;derivative&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="nt">&quot;GeneratedBy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QSIParc&quot;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Parcellated diffusion scalar extraction and connectivity repackaging from QSIRecon outputs.&quot;</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">&quot;CodeURL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/snbb/qsiparc&quot;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="diffusion-scalar-tsv-_diffmaptsv">Diffusion scalar TSV (<code>*_diffmap.tsv</code>)<a class="headerlink" href="#diffusion-scalar-tsv-_diffmaptsv" title="Permanent link">&para;</a></h2>
 <p>One file per atlas per session, containing all extracted scalars stacked in long format.</p>
 <h3 id="filename">Filename<a class="headerlink" href="#filename" title="Permanent link">&para;</a></h3>
-<p><code>sub-{label}_ses-{label}_atlas-{atlas_name}_software-{workflow}_{source_entities}_diffmap.tsv</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>sub-{label}_ses-{label}_atlas-{atlas_name}_software-{workflow}_{source_entities}_diffmap.tsv
+</span></code></pre></div>
 <ul>
 <li><code>software-{workflow}</code>: QSIRecon workflow name (e.g. <code>software-AMICONODDI</code>). Omitted if not determinable from the path.</li>
 <li><code>{source_entities}</code>: BIDS key-value pairs from the source scalar file, excluding <code>sub</code> and <code>ses</code>.</li>
@@ -1386,62 +1510,68 @@
 <p>Each row represents one region × one scalar combination. A session with 100 atlas regions and 12 scalars produces 1,200 rows in a single TSV.</p>
 </div>
 <h3 id="example-rows">Example rows<a class="headerlink" href="#example-rows" title="Permanent link">&para;</a></h3>
-<p><code>region_index  region_name                hemisphere  scalar  mean    median  std     iqr     skewness  kurtosis  n_voxels  coverage
-1             LH_Vis_1                   L           FA      0.4218  0.4195  0.0823  0.1041  0.1548    -0.3241   847       0.9811
-2             LH_Vis_2                   L           FA      0.3974  0.3901  0.0791  0.0998  0.2103    -0.2987   623       0.9654
-...
-1             LH_Vis_1                   L           MD      0.0008  0.0008  0.0001  0.0001  0.4231    0.8714    847       0.9811</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>region_index  region_name                hemisphere  scalar  mean    median  std     iqr     skewness  kurtosis  n_voxels  coverage
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>1             LH_Vis_1                   L           FA      0.4218  0.4195  0.0823  0.1041  0.1548    -0.3241   847       0.9811
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>2             LH_Vis_2                   L           FA      0.3974  0.3901  0.0791  0.0998  0.2103    -0.2987   623       0.9654
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>...
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>1             LH_Vis_1                   L           MD      0.0008  0.0008  0.0001  0.0001  0.4231    0.8714    847       0.9811
+</span></code></pre></div>
 <h3 id="loading-in-python">Loading in Python<a class="headerlink" href="#loading-in-python" title="Permanent link">&para;</a></h3>
-<p>```python
-import pandas as pd</p>
-<p>df = pd.read_csv("...diffmap.tsv", sep="\t")</p>
-<h1 id="all-fa-values-left-hemisphere">All FA values, left hemisphere<a class="headerlink" href="#all-fa-values-left-hemisphere" title="Permanent link">&para;</a></h1>
-<p>fa = df[(df["scalar"] == "FA") &amp; (df["hemisphere"] == "L")]</p>
-<h1 id="pivot-to-wide-format-regions-scalars">Pivot to wide format (regions × scalars)<a class="headerlink" href="#pivot-to-wide-format-regions-scalars" title="Permanent link">&para;</a></h1>
-<p>wide = df.pivot_table(index="region_name", columns="scalar", values="mean")
-```</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;...diffmap.tsv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># All FA values, left hemisphere</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">fa</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;scalar&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;FA&quot;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;hemisphere&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">)]</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Pivot to wide format (regions × scalars)</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">wide</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">&quot;region_name&quot;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">&quot;scalar&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+</span></code></pre></div>
 <h2 id="diffusion-scalar-json-sidecar-_diffmapjson">Diffusion scalar JSON sidecar (<code>*_diffmap.json</code>)<a class="headerlink" href="#diffusion-scalar-json-sidecar-_diffmapjson" title="Permanent link">&para;</a></h2>
 <p>Full provenance for each TSV file.</p>
-<p><code>json
-{
-  "subject": "sub-001",
-  "session": "ses-01",
-  "atlas_name": "Schaefer2018N100Tian2020S2",
-  "atlas_dseg": "/data/qsirecon/sub-001/ses-01/dwi/...dseg.nii.gz",
-  "lut_file": "/data/qsirecon/atlases/atlas-Schaefer2018N100Tian2020S2/...dseg.tsv",
-  "scalar_name": "FA",
-  "source_file": "/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/...dwimap.nii.gz",
-  "source_entities": {"sub": "001", "ses": "01", "space": "ACPC", "param": "FA"},
-  "software": "AMICONODDI",
-  "processing": {
-    "zero_is_missing": false,
-    "stat_tier": "extended"
-  },
-  "generated_by": {
-    "name": "QSIParc",
-    "version": "0.1.0",
-    "timestamp": "2026-03-29T10:23:15.123456+00:00"
-  }
-}</code></p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;subject&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sub-001&quot;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;session&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ses-01&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;atlas_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Schaefer2018N100Tian2020S2&quot;</span><span class="p">,</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="nt">&quot;atlas_dseg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/sub-001/ses-01/dwi/...dseg.nii.gz&quot;</span><span class="p">,</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="nt">&quot;lut_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/atlases/atlas-Schaefer2018N100Tian2020S2/...dseg.tsv&quot;</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span><span class="nt">&quot;scalar_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FA&quot;</span><span class="p">,</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="nt">&quot;source_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/derivatives/qsirecon-AMICONODDI/sub-001/ses-01/dwi/...dwimap.nii.gz&quot;</span><span class="p">,</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="nt">&quot;source_entities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;001&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;ses&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;01&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;space&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ACPC&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;param&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FA&quot;</span><span class="p">},</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nt">&quot;software&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AMICONODDI&quot;</span><span class="p">,</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="nt">&quot;processing&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="nt">&quot;zero_is_missing&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="nt">&quot;stat_tier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;extended&quot;</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span><span class="p">},</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span><span class="nt">&quot;generated_by&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;QSIParc&quot;</span><span class="p">,</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.1.0&quot;</span><span class="p">,</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-03-29T10:23:15.123456+00:00&quot;</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="p">}</span>
+</span></code></pre></div>
 <h2 id="connectivity-matrix-csv-_connmatrixcsv">Connectivity matrix CSV (<code>*_connmatrix.csv</code>)<a class="headerlink" href="#connectivity-matrix-csv-_connmatrixcsv" title="Permanent link">&para;</a></h2>
 <p>Symmetric N×N matrix. Rows and columns correspond to atlas regions in the order defined by the atlas LUT. No row/column headers.</p>
-<p><code>0.0,4.21,8.73,...
-4.21,0.0,12.4,...
-8.73,12.4,0.0,...
-...</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>0.0,4.21,8.73,...
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>4.21,0.0,12.4,...
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>8.73,12.4,0.0,...
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>...
+</span></code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">No headers</p>
 <p>The CSV has no header row or row index. Region correspondence is defined by the paired JSON sidecar's <code>region_labels</code> field.</p>
 </div>
 <h3 id="loading-in-python_1">Loading in Python<a class="headerlink" href="#loading-in-python_1" title="Permanent link">&para;</a></h3>
-<p>```python
-import numpy as np
-import json</p>
-<p>matrix = np.loadtxt("...connmatrix.csv", delimiter=",")</p>
-<p>with open("...connmatrix.json") as f:
-    meta = json.load(f)</p>
-<p>labels = meta["region_labels"]  # list of region names, same order as matrix rows/cols
-```</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;...connmatrix.csv&quot;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;...connmatrix.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="n">labels</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s2">&quot;region_labels&quot;</span><span class="p">]</span>  <span class="c1"># list of region names, same order as matrix rows/cols</span>
+</span></code></pre></div>
 <h3 id="four-measures">Four measures<a class="headerlink" href="#four-measures" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -1476,18 +1606,18 @@ import json</p>
 </table>
 <p>Measures requiring SIFT2 weights are skipped (with a warning) when no weight file is found adjacent to the tractogram.</p>
 <h2 id="connectivity-matrix-json-sidecar-_connmatrixjson">Connectivity matrix JSON sidecar (<code>*_connmatrix.json</code>)<a class="headerlink" href="#connectivity-matrix-json-sidecar-_connmatrixjson" title="Permanent link">&para;</a></h2>
-<p><code>json
-{
-  "atlas_name": "Schaefer2018N100Tian2020S2",
-  "measure": "sift_invnodevol_radius2_count",
-  "n_regions": 100,
-  "region_labels": ["LH_Vis_1", "LH_Vis_2", ...],
-  "symmetric": true,
-  "source_tck": "/data/qsirecon/derivatives/.../...streamlines.tck.gz",
-  "source_dseg": "/data/qsirecon/sub-001/ses-01/dwi/...dseg.nii.gz",
-  "sift_weights": "/data/qsirecon/derivatives/.../...streamlineweights.csv",
-  "tck2connectome_cmd": ["tck2connectome", "...", "..."]
-}</code></p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="nt">&quot;atlas_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Schaefer2018N100Tian2020S2&quot;</span><span class="p">,</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nt">&quot;measure&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;sift_invnodevol_radius2_count&quot;</span><span class="p">,</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="nt">&quot;n_regions&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="nt">&quot;region_labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;LH_Vis_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;LH_Vis_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span><span class="p">],</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="nt">&quot;symmetric&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="nt">&quot;source_tck&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/derivatives/.../...streamlines.tck.gz&quot;</span><span class="p">,</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">  </span><span class="nt">&quot;source_dseg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/sub-001/ses-01/dwi/...dseg.nii.gz&quot;</span><span class="p">,</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">  </span><span class="nt">&quot;sift_weights&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/data/qsirecon/derivatives/.../...streamlineweights.csv&quot;</span><span class="p">,</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span><span class="nt">&quot;tck2connectome_cmd&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tck2connectome&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">]</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="p">}</span>
+</span></code></pre></div>
 <p>The <code>tck2connectome_cmd</code> field contains the exact command that was run, enabling full reproducibility.</p>
 
 

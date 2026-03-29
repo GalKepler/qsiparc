@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/qsiparc_logo.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
@@ -1366,45 +1366,45 @@
 <h3 id="sift_invnodevol_radius2_count"><code>sift_invnodevol_radius2_count</code><a class="headerlink" href="#sift_invnodevol_radius2_count" title="Permanent link">&para;</a></h3>
 <p>SIFT2-weighted streamline count, normalised by inverse node volume. This is the recommended measure for comparing connectivity across regions of different sizes.</p>
 <p><strong>tck2connectome flags:</strong>
-<code>bash
-tck2connectome &lt;tck&gt; &lt;dseg&gt; &lt;out.csv&gt; \
-    -assignment_radial_search 2 \
-    -scale_invnodevol \
-    -symmetric \
-    -stat_edge sum \
-    -tck_weights_in &lt;sift2_weights.csv&gt;</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>tck2connectome<span class="w"> </span>&lt;tck&gt;<span class="w"> </span>&lt;dseg&gt;<span class="w"> </span>&lt;out.csv&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span>-assignment_radial_search<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span>-scale_invnodevol<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span>-symmetric<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span>-stat_edge<span class="w"> </span>sum<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>-tck_weights_in<span class="w"> </span>&lt;sift2_weights.csv&gt;
+</span></code></pre></div></p>
 <p><strong>Requires:</strong> SIFT2 weights</p>
 <hr />
 <h3 id="radius2_meanlength"><code>radius2_meanlength</code><a class="headerlink" href="#radius2_meanlength" title="Permanent link">&para;</a></h3>
 <p>Mean streamline length per edge. Useful for characterising the physical distance of structural connections.</p>
 <p><strong>tck2connectome flags:</strong>
-<code>bash
-tck2connectome &lt;tck&gt; &lt;dseg&gt; &lt;out.csv&gt; \
-    -assignment_radial_search 2 \
-    -scale_length \
-    -symmetric \
-    -stat_edge mean</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>tck2connectome<span class="w"> </span>&lt;tck&gt;<span class="w"> </span>&lt;dseg&gt;<span class="w"> </span>&lt;out.csv&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span>-assignment_radial_search<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span>-scale_length<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span>-symmetric<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span>-stat_edge<span class="w"> </span>mean
+</span></code></pre></div></p>
 <p><strong>Requires:</strong> Nothing additional</p>
 <hr />
 <h3 id="radius2_count"><code>radius2_count</code><a class="headerlink" href="#radius2_count" title="Permanent link">&para;</a></h3>
 <p>Raw streamline count. No SIFT2 weighting, no normalisation. Useful as a baseline or for comparison with SIFT2-weighted measures.</p>
 <p><strong>tck2connectome flags:</strong>
-<code>bash
-tck2connectome &lt;tck&gt; &lt;dseg&gt; &lt;out.csv&gt; \
-    -assignment_radial_search 2 \
-    -symmetric \
-    -stat_edge sum</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>tck2connectome<span class="w"> </span>&lt;tck&gt;<span class="w"> </span>&lt;dseg&gt;<span class="w"> </span>&lt;out.csv&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span>-assignment_radial_search<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>-symmetric<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>-stat_edge<span class="w"> </span>sum
+</span></code></pre></div></p>
 <p><strong>Requires:</strong> Nothing additional</p>
 <hr />
 <h3 id="sift_radius2_count"><code>sift_radius2_count</code><a class="headerlink" href="#sift_radius2_count" title="Permanent link">&para;</a></h3>
 <p>SIFT2-weighted streamline count without node-volume normalisation. Complements <code>sift_invnodevol_radius2_count</code> when you want to preserve absolute counts.</p>
 <p><strong>tck2connectome flags:</strong>
-<code>bash
-tck2connectome &lt;tck&gt; &lt;dseg&gt; &lt;out.csv&gt; \
-    -assignment_radial_search 2 \
-    -symmetric \
-    -stat_edge sum \
-    -tck_weights_in &lt;sift2_weights.csv&gt;</code></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>tck2connectome<span class="w"> </span>&lt;tck&gt;<span class="w"> </span>&lt;dseg&gt;<span class="w"> </span>&lt;out.csv&gt;<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>-assignment_radial_search<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>-symmetric<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span>-stat_edge<span class="w"> </span>sum<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span>-tck_weights_in<span class="w"> </span>&lt;sift2_weights.csv&gt;
+</span></code></pre></div></p>
 <p><strong>Requires:</strong> SIFT2 weights</p>
 <hr />
 <h2 id="flag-reference">Flag reference<a class="headerlink" href="#flag-reference" title="Permanent link">&para;</a></h2>
@@ -1460,26 +1460,29 @@ tck2connectome &lt;tck&gt; &lt;dseg&gt; &lt;out.csv&gt; \
 <li>If MRtrix3 is <strong>found</strong>: connectomes are built for all subjects.</li>
 <li>If MRtrix3 is <strong>not found</strong>: a warning is printed and connectome construction is skipped. Scalar extraction continues normally.</li>
 </ul>
-<p><code>WARNING tck2connectome not found on PATH — connectome construction will be skipped.
-         Install MRtrix3 to enable this feature.</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>WARNING tck2connectome not found on PATH — connectome construction will be skipped.
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>         Install MRtrix3 to enable this feature.
+</span></code></pre></div>
 <h2 id="sift2-weights-discovery">SIFT2 weights discovery<a class="headerlink" href="#sift2-weights-discovery" title="Permanent link">&para;</a></h2>
 <p>QSIParc looks for SIFT2 weight files <strong>adjacent to the tractogram</strong> (same directory):</p>
-<p><code>*_streamlineweights.csv
-*_siftweights.csv</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>*_streamlineweights.csv
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>*_siftweights.csv
+</span></code></pre></div>
 <p>If no weight file is found, the two SIFT2-requiring measures (<code>sift_invnodevol_radius2_count</code> and <code>sift_radius2_count</code>) are skipped with a per-tractogram warning. The unweighted measures still run.</p>
 <h2 id="handling-compressed-tractograms">Handling compressed tractograms<a class="headerlink" href="#handling-compressed-tractograms" title="Permanent link">&para;</a></h2>
 <p>MRtrix3 does not accept <code>.tck.gz</code> files directly. QSIParc automatically decompresses the tractogram to a temporary <code>.tck</code> file, runs all four <code>tck2connectome</code> calls, then deletes the temporary file. This happens transparently.</p>
 <h2 id="output-files">Output files<a class="headerlink" href="#output-files" title="Permanent link">&para;</a></h2>
 <p>For each tractogram × atlas pair, up to eight files are written (CSV + JSON per measure):</p>
-<p><code>atlas-{name}/
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_invnodevol_radius2_count_connmatrix.csv
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_invnodevol_radius2_count_connmatrix.json
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_meanlength_connmatrix.csv
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_meanlength_connmatrix.json
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_count_connmatrix.csv
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_count_connmatrix.json
-├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_radius2_count_connmatrix.csv
-└── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_radius2_count_connmatrix.json</code></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>atlas-{name}/
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_invnodevol_radius2_count_connmatrix.csv
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_invnodevol_radius2_count_connmatrix.json
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_meanlength_connmatrix.csv
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_meanlength_connmatrix.json
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_count_connmatrix.csv
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-radius2_count_connmatrix.json
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>├── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_radius2_count_connmatrix.csv
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>└── sub-001_ses-01_{tck_entities}_atlas-{name}_desc-sift_radius2_count_connmatrix.json
+</span></code></pre></div>
 <p><code>{tck_entities}</code> contains the BIDS entities from the tractogram filename (excluding <code>sub</code> and <code>ses</code>), allowing disambiguation when multiple tractograms exist in the same session.</p>
 <p>See <a href="../outputs/">Output Format</a> for details on the CSV and JSON sidecar schemas.</p>
 
