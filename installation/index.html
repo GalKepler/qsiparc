@@ -579,6 +579,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apptainer-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apptainer (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mrtrix3" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1200,6 +1222,28 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#apptainer-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apptainer (recommended)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#mrtrix3" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1228,6 +1272,10 @@
 
 
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<div class="admonition tip">
+<p class="admonition-title">Recommended: use the Apptainer image</p>
+<p>For most users — especially on HPC clusters — the Apptainer image is the easiest way to run QSIParc. It bundles Python, MRtrix3, and all dependencies into a single portable file with no local install required. See <a href="#apptainer">Apptainer</a> below.</p>
+</div>
 <h2 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Python ≥ 3.10</li>
@@ -1296,13 +1344,48 @@
 </tr>
 </tbody>
 </table>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
+<p>A <code>Dockerfile</code> is provided to build a portable image bundling Python, MRtrix3, and all dependencies.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Build</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>qsiparc<span class="w"> </span>.
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Run</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>-v<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span>-v<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span>qsiparc<span class="w"> </span>/input<span class="w"> </span>/output
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># With filters</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span>-v<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span>-v<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span>qsiparc<span class="w"> </span>/input<span class="w"> </span>/output<span class="w"> </span>--participant-label<span class="w"> </span>sub-001<span class="w"> </span>--atlas<span class="w"> </span>4S256Parcels
+</span></code></pre></div>
+<h2 id="apptainer-recommended">Apptainer (recommended)<a class="headerlink" href="#apptainer-recommended" title="Permanent link">&para;</a></h2>
+<p>An <code>apptainer.def</code> definition file is provided to build a portable SIF image bundling Python, MRtrix3, and all dependencies — no local install required. Apptainer is the standard container runtime on most HPC clusters and is the recommended way to run QSIParc.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Build the image (requires root or --fakeroot on clusters)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>apptainer<span class="w"> </span>build<span class="w"> </span>qsiparc.sif<span class="w"> </span>apptainer.def
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Run</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>apptainer<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span>--bind<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span>--bind<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span>qsiparc.sif<span class="w"> </span>/input<span class="w"> </span>/output
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># With filters</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>apptainer<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span>--bind<span class="w"> </span>/data/qsirecon:/input:ro<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span>--bind<span class="w"> </span>/data/output:/output<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span>qsiparc.sif<span class="w"> </span>/input<span class="w"> </span>/output<span class="w"> </span>--participant-label<span class="w"> </span>sub-001<span class="w"> </span>--atlas<span class="w"> </span>4S256Parcels
+</span></code></pre></div>
+<p>Bind your QSIRecon derivatives directory to <code>/input</code> and your desired output directory to <code>/output</code>. The runscript passes all arguments directly to <code>qsiparc</code>.</p>
 <h2 id="mrtrix3">MRtrix3<a class="headerlink" href="#mrtrix3" title="Permanent link">&para;</a></h2>
 <p>MRtrix3 is an external dependency for connectome construction. Install it following the <a href="https://www.mrtrix.org/download/">official instructions</a>.</p>
 <p>In a typical QSIRecon environment (e.g., a Singularity/Docker container), MRtrix3 is already available. QSIParc checks for <code>tck2connectome</code> on <code>$PATH</code> at startup and warns — but does not fail — if it is absent.</p>
 <div class="admonition note">
 <p class="admonition-title">Conda environments</p>
 <p>If you use a conda environment, MRtrix3 can be installed via:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mrtrix3
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mrtrix3
 </span></code></pre></div></p>
 </div>
 
