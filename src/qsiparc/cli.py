@@ -7,9 +7,10 @@ Examples:
     # All subjects, all atlases
     qsiparc /data/qsirecon /data/qsiparc-out
 
-    # Single atlas, single subject
+    # One or more atlases, single subject
     qsiparc /data/qsirecon /data/qsiparc-out \
         --atlas Schaefer2018N100Tian2020S2 \
+        --atlas 4S256Parcels \
         --participant-label sub-001
 
     # Specific scalars only
@@ -77,8 +78,9 @@ def _setup_logging(verbosity: int) -> None:
     "--atlas",
     "-a",
     type=str,
+    multiple=True,
     default=None,
-    help="Process a single atlas (e.g. Schaefer2018N100Tian2020S2).",
+    help="Atlas name(s) to process (e.g. Schaefer2018N100Tian2020S2). Repeatable.",
 )
 @click.option(
     "--scalars",
@@ -124,7 +126,7 @@ def main(
     output_dir: Path,
     participant_label: str | None,
     session_label: str | None,
-    atlas: str | None,
+    atlas: tuple[str, ...],
     scalars: tuple[str, ...],
     stat_tier: str,
     zero_is_missing: bool,
@@ -152,7 +154,7 @@ def main(
         qsirecon_dir,
         participant_label=participant_label,
         session_label=session_label,
-        atlas=atlas,
+        atlas=list(atlas) if atlas else None,
     )
 
     if not dseg_files:

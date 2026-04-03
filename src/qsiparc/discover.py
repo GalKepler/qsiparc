@@ -189,7 +189,7 @@ def discover_dseg_files(
     qsirecon_dir: Path,
     participant_label: str | None = None,
     session_label: str | None = None,
-    atlas: str | None = None,
+    atlas: str | list[str] | None = None,
 ) -> list[AtlasDsegFile]:
     """Find atlas parcellation (dseg) NIfTIs in a QSIRecon derivatives directory.
 
@@ -201,8 +201,8 @@ def discover_dseg_files(
         Restrict to a single subject (e.g. ``"sub-001"`` or ``"001"``).
     session_label : str, optional
         Restrict to a single session (e.g. ``"ses-01"`` or ``"01"``).
-    atlas : str, optional
-        Restrict to a single atlas name (e.g. ``"Schaefer2018N100Tian2020S2"``).
+    atlas : str or list[str], optional
+        Restrict to one or more atlas names (e.g. ``"Schaefer2018N100Tian2020S2"``).
 
     Returns
     -------
@@ -222,7 +222,8 @@ def discover_dseg_files(
         atlas_name = entities.get("seg", "")
         if not atlas_name:
             continue  # skip dsegs without a seg entity
-        if atlas and atlas_name != atlas:
+        atlas_filter = [atlas] if isinstance(atlas, str) else atlas
+        if atlas_filter and atlas_name not in atlas_filter:
             continue
         lut_path = find_atlas_lut(qsirecon_dir, atlas_name)
         results.append(

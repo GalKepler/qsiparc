@@ -114,7 +114,7 @@ Exit code `0` means all succeeded. `1` means partial failure (some subjects had 
 
 | Option | Example | Purpose |
 |--------|---------|---------|
-| `--atlas` | `--atlas 4S156Parcels` | Restrict to one atlas |
+| `--atlas` | `-a 4S156Parcels -a 4S256Parcels` | Restrict to one or more atlases (repeatable) |
 | `--scalars` | `--scalars FA MD ICVF` | Only specific scalars |
 | `--zero-is-missing` | | Treat 0.0 voxels as NaN |
 | `--stat-tier` | `--stat-tier core` | Fewer statistics columns |

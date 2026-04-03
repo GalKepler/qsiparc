@@ -23,7 +23,7 @@ qsiparc [OPTIONS] QSIRECON_DIR OUTPUT_DIR
 |--------|-------|------|---------|-------------|
 | `--participant-label` | `-p` | `str` | all subjects | Process a single subject. Accepts `sub-001` or `001`. |
 | `--session-label` | `-s` | `str` | all sessions | Process a single session. Accepts `ses-01` or `01`. |
-| `--atlas` | `-a` | `str` | all atlases | Process a single atlas by name (e.g. `Schaefer2018N100Tian2020S2`). |
+| `--atlas` | `-a` | `str` (repeatable) | all atlases | Restrict to one or more atlases by name. Repeatable: `-a 4S156Parcels -a 4S256Parcels`. |
 | `--scalars` | | `str` (repeatable) | all discovered | Scalar names to extract. Repeatable: `--scalars FA --scalars MD`. |
 
 ### Processing
@@ -57,9 +57,15 @@ qsiparc /data/qsirecon /data/qsiparc-out \
     --session-label ses-01 \
     -vv
 
-# Single atlas only
+# Single atlas
 qsiparc /data/qsirecon /data/qsiparc-out \
     --atlas Schaefer2018N100Tian2020S2
+
+# Multiple atlases
+qsiparc /data/qsirecon /data/qsiparc-out \
+    -a 4S156Parcels \
+    -a 4S256Parcels \
+    -a Schaefer2018N100Tian2020S2
 
 # Only specific scalar maps
 qsiparc /data/qsirecon /data/qsiparc-out \
