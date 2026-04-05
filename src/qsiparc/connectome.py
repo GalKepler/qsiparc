@@ -290,8 +290,21 @@ def build_connectomes(
                 plain_tck, dseg_file.path, csv_path, measure, sw
             )
 
-            logger.info("%s/%s | Running: %s", subject, session, " ".join(cmd))
+            logger.info(
+                "%s/%s | Running tck2connectome [%s]: %s",
+                subject,
+                session,
+                measure,
+                " ".join(cmd),
+            )
             result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+            if result.stdout.strip():
+                logger.debug(
+                    "%s/%s | tck2connectome stdout:\n%s",
+                    subject,
+                    session,
+                    result.stdout.strip(),
+                )
             if result.returncode != 0:
                 logger.error(
                     "%s/%s | tck2connectome failed for measure %s (exit %d):\n%s",
@@ -304,6 +317,12 @@ def build_connectomes(
                 raise subprocess.CalledProcessError(
                     result.returncode, cmd, result.stdout, result.stderr
                 )
+            logger.info(
+                "%s/%s | tck2connectome [%s] complete — reading matrix...",
+                subject,
+                session,
+                measure,
+            )
 
             matrix = np.loadtxt(csv_path, delimiter=",")
 
