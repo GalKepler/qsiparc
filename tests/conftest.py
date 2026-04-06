@@ -6,6 +6,7 @@ extraction results can be verified deterministically.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import nibabel as nib
@@ -175,4 +176,121 @@ def bids_tree(tmp_path: Path) -> dict[str, Path]:
         "tck": tck_path,
         "sift_weights": sift_path,
         "connectome": conn_path,
+    }
+
+
+@pytest.fixture
+def qsiparc_output_tree(tmp_path: Path) -> dict[str, Path]:
+    """Create a minimal qsiparc output directory with diffmap TSVs and connectome files.
+
+    Structure::
+
+        qsiparc_out/
+          sub-001/ses-01/dwi/atlas-TestAtlas5/
+            sub-001_ses-01_atlas-TestAtlas5_param-FA_diffmap.tsv
+            sub-001_ses-01_atlas-TestAtlas5_param-FA_diffmap.json
+            sub-001_ses-01_atlas-TestAtlas5_desc-radius2count_connmatrix.csv
+            sub-001_ses-01_atlas-TestAtlas5_desc-radius2count_connmatrix.json
+            sub-001_ses-01_atlas-TestAtlas5_desc-radius2meanlength_connmatrix.csv
+            sub-001_ses-01_atlas-TestAtlas5_desc-radius2meanlength_connmatrix.json
+          sub-002/ses-01/dwi/atlas-TestAtlas5/
+            (same files for sub-002)
+
+    Returns a dict with keys:
+        root, group_dir, atlas_dir_001, atlas_dir_002
+    """
+    root = tmp_path / "qsiparc_out"
+    region_labels = [
+        "LH_Vis_1",
+        "RH_Vis_1",
+        "LH_Default_1",
+        "Thalamus_L",
+        "Cerebellum_R",
+    ]
+    n_regions = len(region_labels)
+    rng = np.random.default_rng(0)
+
+    def _make_diffmap_tsv(
+        atlas_dir: Path, subject: str, session: str, scalar: str
+    ) -> None:
+        rows = []
+        for i, name in enumerate(region_labels, start=1):
+            hemi = (
+                "L"
+                if name.startswith("LH")
+                else ("R" if name.startswith("RH") else "bilateral")
+            )
+            rows.append(
+                {
+                    "region_index": i,
+                    "region_name": name,
+                    "hemisphere": hemi,
+                    "scalar": scalar,
+                    "mean": round(rng.uniform(0.1, 0.9), 4),
+                    "median": round(rng.uniform(0.1, 0.9), 4),
+                    "std": round(rng.uniform(0.01, 0.1), 4),
+                    "iqr": round(rng.uniform(0.01, 0.1), 4),
+                    "skewness": round(rng.uniform(-1, 1), 4),
+                    "kurtosis": round(rng.uniform(-1, 1), 4),
+                    "n_voxels": int(rng.integers(10, 50)),
+                    "coverage": round(rng.uniform(0.8, 1.0), 4),
+                }
+            )
+        import pandas as pd
+
+        df = pd.DataFrame(rows)
+        stem = f"{subject}_{session}_atlas-TestAtlas5_param-{scalar}_diffmap"
+        tsv_path = atlas_dir / f"{stem}.tsv"
+        json_path = atlas_dir / f"{stem}.json"
+        df.to_csv(tsv_path, sep="\t", index=False)
+        json_path.write_text(
+            json.dumps(
+                {
+                    "subject": subject,
+                    "session": session,
+                    "atlas_name": "TestAtlas5",
+                    "scalar_name": scalar,
+                    "generated_by": {"name": "QSIParc", "version": "0.1.0"},
+                }
+            )
+        )
+
+    def _make_connmatrix(
+        atlas_dir: Path, subject: str, session: str, measure: str
+    ) -> None:
+        matrix = rng.integers(0, 100, (n_regions, n_regions)).astype(float)
+        matrix = (matrix + matrix.T) / 2  # make symmetric
+        stem = f"{subject}_{session}_atlas-TestAtlas5_desc-{measure}_connmatrix"
+        csv_path = atlas_dir / f"{stem}.csv"
+        json_path = atlas_dir / f"{stem}.json"
+        np.savetxt(csv_path, matrix, delimiter=",", fmt="%.2f")
+        json_path.write_text(
+            json.dumps(
+                {
+                    "atlas_name": "TestAtlas5",
+                    "measure": measure,
+                    "n_regions": n_regions,
+                    "region_labels": region_labels,
+                    "symmetric": True,
+                }
+            )
+        )
+
+    atlas_dirs: dict[str, Path] = {}
+    for subject in ("sub-001", "sub-002"):
+        atlas_dir = root / subject / "ses-01" / "dwi" / "atlas-TestAtlas5"
+        atlas_dir.mkdir(parents=True)
+        atlas_dirs[subject] = atlas_dir
+        for scalar in ("FA", "MD"):
+            _make_diffmap_tsv(atlas_dir, subject, "ses-01", scalar)
+        for measure in ("radius2count", "radius2meanlength"):
+            _make_connmatrix(atlas_dir, subject, "ses-01", measure)
+
+    return {
+        "root": root,
+        "group_dir": root / "group",
+        "atlas_dir_001": atlas_dirs["sub-001"],
+        "atlas_dir_002": atlas_dirs["sub-002"],
+        "region_labels": region_labels,
+        "n_regions": n_regions,
     }

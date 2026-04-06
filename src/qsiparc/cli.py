@@ -1,26 +1,35 @@
 """Command-line interface for QSIParc.
 
-Usage:
-    qsiparc <qsirecon_dir> <output_dir> [OPTIONS]
+Commands:
+    run        Extract parcellated diffusion features from QSIRecon outputs.
+    aggregate  Collect per-subject QSIParc outputs into group-level tables.
 
-Examples:
+Examples (run):
     # All subjects, all atlases
-    qsiparc /data/qsirecon /data/qsiparc-out
+    qsiparc run /data/qsirecon /data/qsiparc-out
 
     # One or more atlases, single subject
-    qsiparc /data/qsirecon /data/qsiparc-out \
-        --atlas Schaefer2018N100Tian2020S2 \
-        --atlas 4S256Parcels \
+    qsiparc run /data/qsirecon /data/qsiparc-out \\
+        --atlas Schaefer2018N100Tian2020S2 \\
+        --atlas 4S256Parcels \\
         --participant-label sub-001
 
     # Specific scalars only
-    qsiparc /data/qsirecon /data/qsiparc-out --scalars FA MD ICVF
+    qsiparc run /data/qsirecon /data/qsiparc-out --scalars FA MD ICVF
 
     # Run with 8 parallel workers
-    qsiparc /data/qsirecon /data/qsiparc-out --n-procs 8
+    qsiparc run /data/qsirecon /data/qsiparc-out --n-procs 8
 
     # Use all available CPUs
-    qsiparc /data/qsirecon /data/qsiparc-out --n-procs -1
+    qsiparc run /data/qsirecon /data/qsiparc-out --n-procs -1
+
+Examples (aggregate):
+    # Aggregate all atlases
+    qsiparc aggregate /data/qsiparc-out
+
+    # Aggregate a specific atlas, diffmaps only
+    qsiparc aggregate /data/qsiparc-out --atlas Schaefer2018N100Tian2020S2 \
+        --data-type diffmap
 """
 
 from __future__ import annotations
@@ -33,6 +42,14 @@ from pathlib import Path
 
 import click
 
+from qsiparc.aggregate import (
+    _atlas_from_key,
+    aggregate_connectomes,
+    aggregate_diffmaps,
+    discover_connmatrix_csvs,
+    discover_diffmap_tsvs,
+    write_aggregate_tsv,
+)
 from qsiparc.connectome import build_connectomes, check_mrtrix3
 from qsiparc.discover import (
     discover_dseg_files,
@@ -234,7 +251,16 @@ def _process_dseg(
         return False, str(e)
 
 
-@click.command()
+@click.group()
+def main() -> None:
+    """QSIParc — parcellated diffusion feature extraction from QSIRecon outputs.
+
+    Use ``qsiparc run`` to extract features, and ``qsiparc aggregate`` to
+    collect per-subject outputs into group-level tables.
+    """
+
+
+@main.command("run")
 @click.argument(
     "qsirecon_dir",
     type=click.Path(exists=True, file_okay=False, path_type=Path),  # type: ignore[type-var]
@@ -312,7 +338,7 @@ def _process_dseg(
 @click.option(
     "-v", "--verbose", count=True, help="Increase verbosity (-v info, -vv debug)."
 )
-def main(
+def run(
     qsirecon_dir: Path,
     output_dir: Path,
     participant_label: str | None,
@@ -466,3 +492,154 @@ def main(
         sys.exit(1)
     else:
         sys.exit(0)
+
+
+@main.command("aggregate")
+@click.argument(
+    "qsiparc_dir",
+    type=click.Path(exists=True, file_okay=False, path_type=Path),  # type: ignore[type-var]
+)
+@click.option(
+    "--output-dir",
+    "-o",
+    type=click.Path(path_type=Path),  # type: ignore[type-var]
+    default=None,
+    help=("Directory to write aggregate tables (default: <qsiparc_dir>/group)."),
+)
+@click.option(
+    "--atlas",
+    "-a",
+    type=str,
+    multiple=True,
+    default=None,
+    help="Atlas name(s) to aggregate (default: all). Repeatable.",
+)
+@click.option(
+    "--data-type",
+    "-d",
+    type=click.Choice(["diffmap", "connmatrix", "all"], case_sensitive=False),
+    default="all",
+    show_default=True,
+    help="Which data type(s) to aggregate.",
+)
+@click.option(
+    "--include-diagonal",
+    is_flag=True,
+    default=False,
+    help="Include self-connections (diagonal) in connectome edge lists.",
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    default=False,
+    help="Overwrite existing aggregate files.",
+)
+@click.option(
+    "-v", "--verbose", count=True, help="Increase verbosity (-v info, -vv debug)."
+)
+def aggregate(
+    qsiparc_dir: Path,
+    output_dir: Path | None,
+    atlas: tuple[str, ...],
+    data_type: str,
+    include_diagonal: bool,
+    force: bool,
+    verbose: int,
+) -> None:
+    """Aggregate per-subject QSIParc outputs into group-level tables.
+
+    QSIPARC_DIR is the output directory from a previous ``qsiparc run``
+    invocation.  Aggregate TSVs are written to <QSIPARC_DIR>/group/ by
+    default (one file per atlas per data type).
+    """
+    _setup_logging(verbose)
+
+    effective_output_dir = (
+        output_dir if output_dir is not None else qsiparc_dir / "group"
+    )
+    atlas_filter = list(atlas) if atlas else None
+
+    logger.info("QSIParc aggregate starting")
+    logger.info("  Input (QSIParc):   %s", qsiparc_dir)
+    logger.info("  Output directory:  %s", effective_output_dir)
+    if atlas_filter:
+        logger.info("  Atlas filter:      %s", ", ".join(atlas_filter))
+    logger.info("  Data type:         %s", data_type)
+
+    n_written = 0
+    any_found = False
+
+    # --- Diffmap aggregation ---
+    if data_type in ("diffmap", "all"):
+        diffmap_files = discover_diffmap_tsvs(qsiparc_dir, atlas=atlas_filter)
+        if diffmap_files:
+            any_found = True
+            logger.info("Found %d diffmap TSV(s) to aggregate.", len(diffmap_files))
+            grouped = aggregate_diffmaps(diffmap_files)
+            for key, df in grouped.items():
+                atlas_name = _atlas_from_key(key)
+                out_path = (
+                    effective_output_dir / "dwi" / f"atlas-{atlas_name}" / f"{key}.tsv"
+                )
+                if out_path.exists() and not force:
+                    logger.info(
+                        "atlas-%s | Skipping %s — already exists",
+                        atlas_name,
+                        out_path.name,
+                    )
+                    continue
+                write_aggregate_tsv(df, out_path)
+                logger.info(
+                    "atlas-%s | Wrote diffmap aggregate (%d rows): %s",
+                    atlas_name,
+                    len(df),
+                    out_path,
+                )
+                n_written += 1
+        else:
+            logger.info("No diffmap TSVs found.")
+
+    # --- Connectome aggregation ---
+    if data_type in ("connmatrix", "all"):
+        connmatrix_files = discover_connmatrix_csvs(qsiparc_dir, atlas=atlas_filter)
+        if connmatrix_files:
+            any_found = True
+            logger.info(
+                "Found %d connmatrix CSV(s) to aggregate.", len(connmatrix_files)
+            )
+            grouped_conn = aggregate_connectomes(
+                connmatrix_files, include_diagonal=include_diagonal
+            )
+            for key, df in grouped_conn.items():
+                atlas_name = _atlas_from_key(key)
+                out_path = (
+                    effective_output_dir / "dwi" / f"atlas-{atlas_name}" / f"{key}.tsv"
+                )
+                if out_path.exists() and not force:
+                    logger.info(
+                        "atlas-%s | Skipping %s — already exists",
+                        atlas_name,
+                        out_path.name,
+                    )
+                    continue
+                write_aggregate_tsv(df, out_path)
+                logger.info(
+                    "atlas-%s | Wrote connmatrix aggregate (%d rows): %s",
+                    atlas_name,
+                    len(df),
+                    out_path,
+                )
+                n_written += 1
+        else:
+            logger.info("No connmatrix CSVs found.")
+
+    if not any_found:
+        logger.error(
+            "No qsiparc outputs found in %s%s.",
+            qsiparc_dir,
+            f" matching atlas filter {atlas_filter}" if atlas_filter else "",
+        )
+        sys.exit(2)
+
+    click.echo(f"\nQSIParc aggregate complete: {n_written} file(s) written.")
+    sys.exit(0)

@@ -30,7 +30,7 @@ dependencies = [
     "scipy>=1.10",
     "click>=8.0",
     "pybids>=0.22.0",
-    "parcellate>=0.3.1",
+    "parcellate>=0.4.1",
 ]
 
 [project.optional-dependencies]

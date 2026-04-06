@@ -215,3 +215,4 @@ plans/
 data/derivatives
 data/atlases
 *.sif
+vis_tmp.ipynb
